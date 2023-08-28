@@ -35,6 +35,7 @@ fn draw_land(state: state::State) {
 
   draw_bush(state, y);
 
+  duck_up(state, state.height / 2);
   duck_mid(state, state.height / 2);
 }
 
@@ -177,7 +178,7 @@ fn draw_bush(state: state::State, y: i64) {
   mem::dealloc_array::<[*]u8>(line);
 }
 
-fn duck_mid(state: state::State, y: i64) {
+fn duck_up(state: state::State, y: i64) {
   let line = mem::alloc_array::<[*]u8>(12);
 
   line[ 0].* = "      ######     ";
@@ -212,6 +213,78 @@ fn duck_mid(state: state::State, y: i64) {
   let y = y - h * tile;
 
   let x = (state.width - w*tile)/2;
+
+  let i: i64 = 0;
+  while i < h {
+    let j: i64 = 0;
+    while j < w {
+      let c = line[i].*[j].*;
+      if c == 35 { // '#'
+        js::canvas_set_fill_style(border);
+        js::canvas_fill_rect(x + j*tile, y + i*tile, tile, tile);
+      } else if c == 119 { // 'w'
+        js::canvas_set_fill_style(white);
+        js::canvas_fill_rect(x + j*tile, y + i*tile, tile, tile);
+      } else if c == 115 { // 's'
+        js::canvas_set_fill_style(shadow);
+        js::canvas_fill_rect(x + j*tile, y + i*tile, tile, tile);
+      } else if c == 121 { // 'y'
+        js::canvas_set_fill_style(yellow);
+        js::canvas_fill_rect(x + j*tile, y + i*tile, tile, tile);
+      } else if c == 114 { // 'r'
+        js::canvas_set_fill_style(red);
+        js::canvas_fill_rect(x + j*tile, y + i*tile, tile, tile);
+      } else if c == 111 { // 'o'
+        js::canvas_set_fill_style(orange);
+        js::canvas_fill_rect(x + j*tile, y + i*tile, tile, tile);
+      } else if c == 103 { // 'g'
+        js::canvas_set_fill_style(green);
+        js::canvas_fill_rect(x + j*tile, y + i*tile, tile, tile);
+      } else {
+      }
+      j = j + 1;
+    }
+    i = i + 1;
+  }
+
+  mem::dealloc_array::<[*]u8>(line);
+}
+
+fn duck_mid(state: state::State, y: i64) {
+  let line = mem::alloc_array::<[*]u8>(12);
+
+  line[ 0].* = "      ######     ";
+  line[ 1].* = "    ##sss#ww#    ";
+  line[ 2].* = "   #ssyy#wwww#   ";
+  line[ 3].* = "  #syyyy#gww#w#  ";
+  line[ 4].* = " #yyyyyy#gww#w#  ";
+  line[ 5].* = " #####yyy#gwww#  ";
+  line[ 6].* = "#wwwww#yyy###### ";
+  line[ 7].* = "#swwws#yy#rrrrrr#";
+  line[ 8].* = " #####oo#r###### ";
+  line[ 9].* = "  #oooooo#rrrrr# ";
+  line[10].* = "   ##ooooo#####  ";
+  line[11].* = "     #####       ";
+
+  let border = js::new_js_string("#533846");
+  js::debug_i64(border.start as i64);
+  js::debug_i64(border.start[0].* as i64);
+  js::debug_i64(border.start[1].* as i64);
+  js::debug_i64(border.start[2].* as i64);
+  js::debug_i64(border.len as i64);
+  let white = js::new_js_string("#FAFAFA");
+  let shadow = js::new_js_string("#FAD78C");
+  let yellow = js::new_js_string("#F8B733");
+  let red = js::new_js_string("#FC3800");
+  let orange = js::new_js_string("#E0802C");
+  let green = js::new_js_string("#D7E6CC");
+
+  let tile = state.height * 5 / 1000;
+  let w = js::strlen(line[0].*) as i64;
+  let h = 12 as i64;
+  let y = y - h * tile;
+
+  let x = (state.width + 2*w*tile)/2;
 
   let i: i64 = 0;
   while i < h {
