@@ -12,12 +12,22 @@ window.onload = function() {
       'canvas_clear_rect': function(x, y, width, height) {
         ctx.clearRect(Number(x), Number(y), Number(width), Number(height));
       },
+      'canvas_set_stroke_style': function(start, len) {
+        const style = new TextDecoder().decode(new Uint8Array(memory.buffer, start, len));
+        ctx.strokeStyle = style;
+      },
+      'canvas_set_line_width': function(width) {
+        ctx.lineWidth = Number(width);
+      },
       'canvas_set_fill_style': function(start, len) {
         const style = new TextDecoder().decode(new Uint8Array(memory.buffer, start, len));
         ctx.fillStyle = style;
       },
       'canvas_fill_rect': function(x, y, width, height) {
         ctx.fillRect(Number(x), Number(y), Number(width), Number(height));
+      },
+      'canvas_stroke_rect': function(x, y, width, height) {
+        ctx.strokeRect(Number(x), Number(y), Number(width), Number(height));
       },
       'debug_i64': function(val) {
         console.log(val);

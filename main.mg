@@ -18,6 +18,7 @@ let s: state::State = state::State{
 fn on_canvas_resized(new_width: i64, new_height: i64) {
   s.width = new_width;
   s.height = new_height;
+  scene::draw_land(s);
 }
 
 @wasm_export("on_load")

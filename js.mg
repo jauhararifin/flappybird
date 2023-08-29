@@ -4,8 +4,17 @@ fn canvas_clear_rect(x: i64, y: i64, width: i64, height: i64);
 @wasm_import("env", "canvas_set_fill_style")
 fn canvas_set_fill_style(str: JsString);
 
+@wasm_import("env", "canvas_set_stroke_style")
+fn canvas_set_stroke_style(str: JsString);
+
+@wasm_import("env", "canvas_set_line_width")
+fn canvas_set_line_width(width: i64);
+
 @wasm_import("env", "canvas_fill_rect")
 fn canvas_fill_rect(x: i64, y: i64, width: i64, height: i64);
+
+@wasm_import("env", "canvas_stroke_rect")
+fn canvas_stroke_rect(x: i64, y: i64, width: i64, height: i64);
 
 @wasm_import("env", "debug_i64")
 fn debug_i64(val: i64);

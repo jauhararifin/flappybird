@@ -3,6 +3,7 @@ import state "state";
 import mem "mem";
 
 let grass_y: i64 = 0;
+let land_y: i64 = 0;
 
 fn draw_land(state: state::State) {
   js::canvas_set_fill_style(js::new_js_string("#88C2CD"));
@@ -31,6 +32,7 @@ fn draw_land(state: state::State) {
   js::canvas_set_fill_style(js::new_js_string("#4B383A"));
   let land_h = state.height * 5 / 1000;
   y = y - land_h;
+  land_y = y;
   js::canvas_fill_rect(0, y, state.width, land_h);
 
   draw_bush(state, y);
@@ -38,6 +40,8 @@ fn draw_land(state: state::State) {
   duck_up(state, state.height / 2);
   duck_mid(state, state.height / 2);
   duck_down(state, state.height / 2);
+
+  draw_pipe(state, state.width / 2 + state.height * 3/10, state.height * 7/10);
 }
 
 fn draw_grass(state: state::State): i64 {
@@ -196,11 +200,6 @@ fn duck_up(state: state::State, y: i64) {
   line[11].* = "     #####       ";
 
   let border = js::new_js_string("#533846");
-  js::debug_i64(border.start as i64);
-  js::debug_i64(border.start[0].* as i64);
-  js::debug_i64(border.start[1].* as i64);
-  js::debug_i64(border.start[2].* as i64);
-  js::debug_i64(border.len as i64);
   let white = js::new_js_string("#FAFAFA");
   let shadow = js::new_js_string("#FAD78C");
   let yellow = js::new_js_string("#F8B733");
@@ -213,7 +212,7 @@ fn duck_up(state: state::State, y: i64) {
   let h = 12 as i64;
   let y = y - h * tile;
 
-  let x = (state.width - w*tile)/2;
+  let x = (state.width - 4*w*tile)/2;
 
   let i: i64 = 0;
   while i < h {
@@ -268,11 +267,6 @@ fn duck_mid(state: state::State, y: i64) {
   line[11].* = "     #####       ";
 
   let border = js::new_js_string("#533846");
-  js::debug_i64(border.start as i64);
-  js::debug_i64(border.start[0].* as i64);
-  js::debug_i64(border.start[1].* as i64);
-  js::debug_i64(border.start[2].* as i64);
-  js::debug_i64(border.len as i64);
   let white = js::new_js_string("#FAFAFA");
   let shadow = js::new_js_string("#FAD78C");
   let yellow = js::new_js_string("#F8B733");
@@ -285,7 +279,7 @@ fn duck_mid(state: state::State, y: i64) {
   let h = 12 as i64;
   let y = y - h * tile;
 
-  let x = (state.width + 2*w*tile)/2;
+  let x = (state.width - w*tile)/2;
 
   let i: i64 = 0;
   while i < h {
@@ -340,11 +334,6 @@ fn duck_down(state: state::State, y: i64) {
   line[11].* = "     #####       ";
 
   let border = js::new_js_string("#533846");
-  js::debug_i64(border.start as i64);
-  js::debug_i64(border.start[0].* as i64);
-  js::debug_i64(border.start[1].* as i64);
-  js::debug_i64(border.start[2].* as i64);
-  js::debug_i64(border.len as i64);
   let white = js::new_js_string("#FAFAFA");
   let shadow = js::new_js_string("#FAD78C");
   let yellow = js::new_js_string("#F8B733");
@@ -357,7 +346,7 @@ fn duck_down(state: state::State, y: i64) {
   let h = 12 as i64;
   let y = y - h * tile;
 
-  let x = (state.width + 5*w*tile)/2;
+  let x = (state.width + 2*w*tile)/2;
 
   let i: i64 = 0;
   while i < h {
@@ -394,3 +383,55 @@ fn duck_down(state: state::State, y: i64) {
 
   mem::dealloc_array::<[*]u8>(line);
 }
+
+fn draw_pipe(state: state::State, x: i64, y: i64) {
+  let tile = state.height * 5 / 1000;
+
+  // pipe head
+  let width = state.height * 130 / 1000;
+  let height = state.height * 50 / 1000;
+  js::canvas_set_fill_style(js::new_js_string("#A5E264"));
+  js::canvas_fill_rect(x + tile, y + 2*tile, tile, height - tile);
+  js::canvas_fill_rect(x + 3 * tile, y + 2*tile, 2*tile, height - tile);
+  js::canvas_fill_rect(x + 6 * tile, y + 2*tile, tile, height - tile);
+  js::canvas_fill_rect(x + 2 * tile, y + 1*tile, tile, tile);
+  js::canvas_fill_rect(x + 20 * tile, y + 1*tile, tile, tile);
+  js::canvas_fill_rect(x + 22 * tile, y + 1*tile, 5*tile, tile);
+  js::canvas_set_fill_style(js::new_js_string("#E8FF8F"));
+  js::canvas_fill_rect(x + 2*tile, y + 2*tile, tile, height - tile);
+  js::canvas_fill_rect(x + 3*tile, y + 1*tile, 15*tile, tile);
+  js::canvas_fill_rect(x + 19*tile, y + 1*tile, 1*tile, tile);
+  js::canvas_fill_rect(x + 21*tile, y + 1*tile, 1*tile, tile);
+  js::canvas_set_fill_style(js::new_js_string("#77C02F"));
+  js::canvas_fill_rect(x + 5*tile, y + 2*tile, tile, height - tile);
+  js::canvas_fill_rect(x + 7*tile, y + 2*tile, 20*tile, height - tile);
+  js::canvas_set_fill_style(js::new_js_string("#56831F"));
+  js::canvas_fill_rect(x + 23*tile, y + 2*tile, 1*tile, height - tile);
+  js::canvas_fill_rect(x + 25*tile, y + 2*tile, 3*tile, height - tile);
+  js::canvas_fill_rect(x, y + height - tile, width, tile);
+  js::canvas_fill_rect(x + tile, y + tile, tile, tile);
+  js::canvas_fill_rect(x + 25*tile, y + tile, 3*tile, tile);
+  js::canvas_set_fill_style(js::new_js_string("#4B383A"));
+  js::canvas_fill_rect(x, y, width, tile);
+  js::canvas_fill_rect(x, y + height, width, tile);
+  js::canvas_fill_rect(x, y, tile, height);
+  js::canvas_fill_rect(x + width - tile, y, tile, height);
+
+  // pipe body
+  let body_height = land_y - (y + height) - tile;
+  js::canvas_set_fill_style(js::new_js_string("#77C02F"));
+  js::canvas_fill_rect(x + tile, y + height + tile, width - 2*tile, body_height);
+  js::canvas_set_fill_style(js::new_js_string("#A5E264"));
+  js::canvas_fill_rect(x + 2*tile, y + height + tile, tile, body_height);
+  js::canvas_fill_rect(x + 4*tile, y + height + tile, 2*tile, body_height);
+  js::canvas_fill_rect(x + 7*tile, y + height + tile, tile, body_height);
+  js::canvas_set_fill_style(js::new_js_string("#E8FF8F"));
+  js::canvas_fill_rect(x + 3*tile, y + height + tile, tile, body_height);
+  js::canvas_set_fill_style(js::new_js_string("#56831F"));
+  js::canvas_fill_rect(x + 22*tile, y + height + tile, 1*tile, body_height);
+  js::canvas_fill_rect(x + 24*tile, y + height + tile, 3*tile, body_height);
+  js::canvas_set_fill_style(js::new_js_string("#4B383A"));
+  js::canvas_fill_rect(x + tile, y + height + tile, tile, body_height);
+  js::canvas_fill_rect(x + width - 2*tile, y + height + tile, tile, body_height);
+}
+
