@@ -1,62 +1,51 @@
 window.onload = function() {
-  const canvas = document.getElementById('canvas');
-  const ctx = canvas.getContext('2d');
-
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 
   let memory;
-
+  const decoder = new TextDecoder();
+  function newHandler(constructor, ...params) {
+    return new constructor(...params);
+  };
+  function callHandler(self, f, ...params) {
+    return f.call(self, ...params)
+  }
   const imports = {
     'env': {
-      'canvas_clear_rect': function(x, y, width, height) {
-        ctx.clearRect(Number(x), Number(y), Number(width), Number(height));
+      'get_window': () => window,
+      'get_property': (obj, prop) => obj[prop],
+      'set_property': (obj, prop, value) => { obj[prop] = value; },
+      'string': (p, len) => decoder.decode(new Uint8Array(memory.buffer, Number(p), Number(len))),
+      'number': (n) => {
+        console.log(typeof n, n)
+        return Number(n);
       },
-      'canvas_set_stroke_style': function(start, len) {
-        const style = new TextDecoder().decode(new Uint8Array(memory.buffer, start, len));
-        ctx.strokeStyle = style;
-      },
-      'canvas_set_line_width': function(width) {
-        ctx.lineWidth = Number(width);
-      },
-      'canvas_set_fill_style': function(start, len) {
-        const style = new TextDecoder().decode(new Uint8Array(memory.buffer, start, len));
-        ctx.fillStyle = style;
-      },
-      'canvas_fill_rect': function(x, y, width, height) {
-        ctx.fillRect(Number(x), Number(y), Number(width), Number(height));
-      },
-      'canvas_stroke_rect': function(x, y, width, height) {
-        ctx.strokeRect(Number(x), Number(y), Number(width), Number(height));
-      },
-      'debug_i64': function(val) {
-        console.log(val);
-      },
-      'debug_f32': function(val) {
-        console.log(val);
-      },
+      'int': (n) => BigInt(n),
+      'debug': console.log,
     },
+  }
+  for (let i = 0; i < 20; i++) {
+    imports['env']['new' + i] = newHandler;
+    imports['env']['call' + i] = callHandler;
   }
 
   WebAssembly.instantiateStreaming(fetch("/main.wasm"), imports).then(
     (results) => {
-      const instance = results.instance;
-      memory = instance.exports.memory;
+      memory = results.instance.exports.memory;
+      console.log('wasm loaded')
+      results.instance.exports.on_load();
 
-      instance.exports.on_canvas_resized(BigInt(canvas.width), BigInt(canvas.height));
-      instance.exports.on_load();
-
-      window.onresize = function() {
+      window.addEventListener('resize', function() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-        instance.exports.on_canvas_resized(BigInt(canvas.width), BigInt(canvas.height));
-      };
+        results.instance.exports.on_resize(canvas.width, canvas.height);
+      })
 
-      const onEnterFrame = (ts) => {
-        instance.exports.on_enter_frame(ts);
+      function onEnterFrame() {
+        results.instance.exports.on_enter_frame();
         window.requestAnimationFrame(onEnterFrame);
-      };
-      window.requestAnimationFrame(onEnterFrame);
+      }
+      onEnterFrame();
     },
   );
 };
