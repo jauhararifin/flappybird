@@ -21,6 +21,7 @@ window.onload = function() {
       'set_property': (obj, prop, value) => { obj[prop] = value; },
       'string': (p, len) => decoder.decode(new Uint8Array(memory.buffer, Number(p), Number(len))),
       'number': (n) => Number(n),
+      'numberf32': (n) => Number(n),
       'bool': (n) => Boolean(n),
       'int': (n) => BigInt(n),
       'debug': (value) => {
@@ -44,11 +45,11 @@ window.onload = function() {
         results.instance.exports.on_resize(BigInt(canvas.width), BigInt(canvas.height));
       })
 
-      function onEnterFrame() {
-        results.instance.exports.on_enter_frame();
+      function onEnterFrame(ts) {
+        results.instance.exports.on_enter_frame(ts);
         window.requestAnimationFrame(onEnterFrame);
       }
-      onEnterFrame();
+      onEnterFrame(performance.now());
     },
   );
 };

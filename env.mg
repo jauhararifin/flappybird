@@ -49,6 +49,9 @@ fn string(s: [*]u8, len: usize): opaque;
 @wasm_import("env", "number")
 fn number(n: u64): opaque;
 
+@wasm_import("env", "numberf32")
+fn numberf32(n: f32): opaque;
+
 @wasm_import("env", "bool")
 fn as_bool(n: bool): opaque;
 

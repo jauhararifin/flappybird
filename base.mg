@@ -96,9 +96,12 @@ fn draw(c: Component, s: state::State) {
 
   // set texture translation
   let matrix_arr: [*]f32 = mem::alloc_array::<f32>(2);
-  let distance: f32 = 0.0;
-  let x = ((distance * 7.45) as i64) as f32;
-  matrix_arr[0].* = distance * 7.45 - x; matrix_arr[1].* = 0.0;
+
+  let distance: f32 = state::dist(s);
+  let x = distance * 7.45;
+  let k = (x as i64) as f32;
+  let x = x - k;
+  matrix_arr[0].* = x; matrix_arr[1].* = 0.0;
   let matrix = js::new_f32_array(c.window, matrix_arr, 2);
   mem::dealloc_array::<f32>(matrix_arr);
   webgl::uniform_2fv(c.drawer.ctx, c.drawer.textCoordTranslateUniform, matrix);

@@ -10,9 +10,18 @@ import state "state";
 
 let window: js::Window;
 let s: state::State = state::State{
+  stage: state::STAGE_READY,
+
   canvas_width: 600.0,
   canvas_height: 600.0,
+
+  gameover_ts: 0.0,
+  start_ts: 0.0,
+  now: 0.0,
 };
+
+let drawer: graphic::Drawer;
+let base_component: base::Component;
 
 let vertexShaderSource: [*]u8 = "
   attribute vec2 a_position;
@@ -49,6 +58,8 @@ fn on_load() {
 
 @wasm_export("on_enter_frame")
 fn on_enter_frame(ts: f32) {
+  s.now = ts;
+  base::draw(base_component, s);
 }
 
 @wasm_export("on_draw")
@@ -58,22 +69,8 @@ fn on_draw() {
 fn setup_webgl() {
   window = js::get_window();
 
-  let drawer = graphic::setup(window);
-  let base_component = base::setup(drawer, window);
+  drawer = graphic::setup(window);
+  base_component = base::setup(drawer, window);
   base::draw(base_component, s);
 }
 
-fn create_shader(ctx: webgl::RenderingContext, shader_type: opaque, source: [*]u8): webgl::Shader {
-  let shader = webgl::create_shader(ctx, shader_type);
-  webgl::shader_source(ctx, shader, source);
-  webgl::compile_shader(ctx, shader);
-  return shader;
-}
-
-fn create_program(ctx: webgl::RenderingContext, vertexShader: webgl::Shader, fragmentShader: webgl::Shader): webgl::Program {
-  let program = webgl::create_program(ctx);
-  webgl::attach_shader(ctx, program, vertexShader);
-  webgl::attach_shader(ctx, program, fragmentShader);
-  webgl::link_program(ctx, program);
-  return program;
-}
