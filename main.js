@@ -42,7 +42,7 @@ window.onload = function() {
       window.addEventListener('resize', function() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-        results.instance.exports.on_resize(BigInt(canvas.width), BigInt(canvas.height));
+        results.instance.exports.on_resize(canvas.width, canvas.height);
       })
 
       function onEnterFrame(ts) {
