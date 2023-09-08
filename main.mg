@@ -6,10 +6,13 @@ import bitmap "bitmap";
 import mem "mem";
 import base "base";
 import graphic "graphic";
+import state "state";
 
 let window: js::Window;
-let canvas: js::Canvas;
-let ctx: webgl::RenderingContext;
+let s: state::State = state::State{
+  canvas_width: 600.0,
+  canvas_height: 600.0,
+};
 
 let vertexShaderSource: [*]u8 = "
   attribute vec2 a_position;
@@ -34,7 +37,9 @@ let fragmentShaderSource: [*]u8 = "
 ";
 
 @wasm_export("on_resize")
-fn on_canvas_resized(new_width: i64, new_height: i64) {
+fn on_canvas_resized(new_width: f32, new_height: f32) {
+  s.canvas_width = new_width as f32;
+  s.canvas_height = new_height as f32;
 }
 
 @wasm_export("on_load")
@@ -55,7 +60,7 @@ fn setup_webgl() {
 
   let drawer = graphic::setup(window);
   let base_component = base::setup(drawer, window);
-  base::draw(base_component);
+  base::draw(base_component, s);
 }
 
 fn create_shader(ctx: webgl::RenderingContext, shader_type: opaque, source: [*]u8): webgl::Shader {
