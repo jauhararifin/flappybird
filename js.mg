@@ -1,5 +1,9 @@
 import env "env";
 
+fn as_bool(b: bool): opaque {
+  return env::as_bool(b);
+}
+
 struct Window {
   inner: opaque,
   document: Document,
@@ -66,4 +70,16 @@ fn str(s: [*]u8): opaque {
     strlen = strlen + 1;
   }
   return env::string(s, strlen);
+}
+
+fn new_uint8_clamped_array(window: Window, buff: [*]u8, len: usize): opaque {
+  let uint8ClampedArray = env::get_property(window.inner, str("Uint8ClampedArray"));
+  let memory = env::get_memory();
+  return env::new3(uint8ClampedArray, memory, env::number(buff as u64), env::number(len as u64));
+}
+
+fn new_f32_array(window: Window, buff: [*]f32, len: usize): opaque {
+  let Float32Array = env::get_property(window.inner, str("Float32Array"));
+  let memory = env::get_memory();
+  return env::new3(Float32Array, memory, env::number(buff as u64), env::number(len as u64));
 }

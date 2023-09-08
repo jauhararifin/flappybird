@@ -1,4 +1,7 @@
 window.onload = function() {
+  const debugCanvas = document.getElementById("debug");
+  const ctx = debugCanvas.getContext("2d");
+
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 
@@ -13,15 +16,16 @@ window.onload = function() {
   const imports = {
     'env': {
       'get_window': () => window,
+      'get_memory': () => memory.buffer,
       'get_property': (obj, prop) => obj[prop],
       'set_property': (obj, prop, value) => { obj[prop] = value; },
       'string': (p, len) => decoder.decode(new Uint8Array(memory.buffer, Number(p), Number(len))),
-      'number': (n) => {
-        console.log(typeof n, n)
-        return Number(n);
-      },
+      'number': (n) => Number(n),
+      'bool': (n) => Boolean(n),
       'int': (n) => BigInt(n),
-      'debug': console.log,
+      'debug': (value) => {
+        console.log('debug', value);
+      },
     },
   }
   for (let i = 0; i < 20; i++) {
@@ -32,13 +36,12 @@ window.onload = function() {
   WebAssembly.instantiateStreaming(fetch("/main.wasm"), imports).then(
     (results) => {
       memory = results.instance.exports.memory;
-      console.log('wasm loaded')
       results.instance.exports.on_load();
 
       window.addEventListener('resize', function() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-        results.instance.exports.on_resize(canvas.width, canvas.height);
+        results.instance.exports.on_resize(BigInt(canvas.width), BigInt(canvas.height));
       })
 
       function onEnterFrame() {
