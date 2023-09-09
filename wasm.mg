@@ -13,4 +13,5 @@ fn memory_size(): usize;
 @intrinsic("memory.grow")
 fn memory_grow(sz: usize): usize;
 
-
+@intrinsic("unreachable")
+fn trap();

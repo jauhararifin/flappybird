@@ -14,5 +14,5 @@ touch embed.mg
 embed base_bmp base.bmp >> embed.mg
 embed favicon_ico favicon.ico >> embed.mg
 
-magelang compile main.mg -o main.wasm
+magelang compile main -o main.wasm
 
