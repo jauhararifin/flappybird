@@ -56,6 +56,7 @@ fn alloc_size(size: usize): usize {
   return allocate_from_new_page(size);
 }
 
+// TODO: merge neighboring free chunks together
 fn dealloc_from_ptr(p: usize) {
   let padded_header = pad(header_size);
   let padded_footer = pad(footer_size);

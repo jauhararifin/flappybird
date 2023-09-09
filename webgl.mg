@@ -30,6 +30,7 @@ struct RenderingContext {
   uniform1i: opaque,
   uniform2fv: opaque,
   getError: opaque,
+  viewport: opaque,
 
   UNPACK_FLIP_Y_WEBGL: opaque,
   SRC_ALPHA: opaque,
@@ -108,6 +109,7 @@ fn get_context(canvas: js::Canvas): RenderingContext {
   ctx.uniform1i = env::get_property(ctx.inner, js::str("uniform1i"));
   ctx.uniform2fv = env::get_property(ctx.inner, js::str("uniform2fv"));
   ctx.getError = env::get_property(ctx.inner, js::str("getError"));
+  ctx.viewport = env::get_property(ctx.inner, js::str("viewport"));
 
   ctx.UNPACK_FLIP_Y_WEBGL = env::get_property(ctx.inner, js::str("UNPACK_FLIP_Y_WEBGL"));
   ctx.SRC_ALPHA = env::get_property(ctx.inner, js::str("SRC_ALPHA"));
@@ -273,4 +275,11 @@ fn uniform_2fv(ctx: RenderingContext, uniform: UniformLocation, data: opaque) {
 
 fn get_error(ctx: RenderingContext): opaque {
   return env::call0(ctx.inner, ctx.getError);
+}
+
+fn viewport(ctx: RenderingContext, x: i32, y: i32, w: i32, h: i32): opaque {
+  return env::call4(
+    ctx.inner, ctx.viewport,
+    env::number(x as u64), env::number(y as u64), env::number(w as u64), env::number(h as u64),
+  );
 }

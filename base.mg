@@ -96,7 +96,6 @@ fn draw(c: Component, s: state::State) {
 
   // set texture translation
   let matrix_arr: [*]f32 = mem::alloc_array::<f32>(2);
-
   let distance: f32 = state::dist(s);
   let x = distance * 7.45;
   let k = (x as i64) as f32;

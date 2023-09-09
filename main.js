@@ -38,6 +38,7 @@ window.onload = function() {
     (results) => {
       memory = results.instance.exports.memory;
       results.instance.exports.on_load();
+      results.instance.exports.on_resize(canvas.width, canvas.height);
 
       window.addEventListener('resize', function() {
         canvas.width = window.innerWidth;

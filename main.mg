@@ -27,6 +27,8 @@ let base_component: base::Component;
 fn on_canvas_resized(new_width: f32, new_height: f32) {
   s.canvas_width = new_width as f32;
   s.canvas_height = new_height as f32;
+
+  webgl::viewport(drawer.ctx, 0, 0, s.canvas_width as i32, s.canvas_height as i32);
 }
 
 @wasm_export("on_load")
