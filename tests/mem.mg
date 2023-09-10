@@ -39,42 +39,85 @@ struct S{a: u8, b: u8, c: u8, d: u8}
 fn testcase_2() {
   let p = mem::alloc_array::<S>(16*42); // 2688
   assert(p as usize == 65552);
+  assert(mem::freelist_head as usize == 68248);
+  assert(mem::freelist_head.size.* as usize == 62800);
 
   let arr1_f32 = mem::alloc_array::<f32>(12);
   assert(arr1_f32 as usize == 68264);
+  assert(mem::freelist_head as usize == 68320);
+  assert(mem::freelist_head.size.* == 62728);
+
   mem::dealloc_array::<f32>(arr1_f32);
+  assert(mem::freelist_head as usize == 68248);
+  assert(mem::freelist_head.size.* as usize == 62800);
+  assert(mem::freelist_head.next.* as usize == 0);
 
   let arr1_f32 = mem::alloc_array::<f32>(12);
   assert(arr1_f32 as usize == 68264);
+  assert(mem::freelist_head as usize == 68320);
+  assert(mem::freelist_head.size.* == 62728);
+
   mem::dealloc_array::<f32>(arr1_f32);
+  assert(mem::freelist_head as usize == 68248);
+  assert(mem::freelist_head.size.* as usize == 62800);
+  assert(mem::freelist_head.next.* as usize == 0);
 
   let m1 = mem::alloc_array::<f32>(9);
   assert(m1 as usize == 68264);
+  assert(mem::freelist_head as usize == 68312);
+  assert(mem::freelist_head.size.* as usize == 62736);
+  assert(mem::freelist_head.next.* as usize == 0);
+
   let m2 = mem::alloc_array::<f32>(9);
-  assert(m2 as usize == 68336);
+  assert(m2 as usize == 68328);
+  assert(mem::freelist_head as usize == 68376);
+  assert(mem::freelist_head.size.* as usize == 62672);
+  assert(mem::freelist_head.next.* as usize == 0);
+
   let m3 = mem::alloc_array::<f32>(9);
-  assert(m3 as usize == 68400);
+  assert(m3 as usize == 68392);
+  assert(mem::freelist_head as usize == 68440);
+  assert(mem::freelist_head.size.* as usize == 62608);
+  assert(mem::freelist_head.next.* as usize == 0);
+
   let m4 = mem::alloc_array::<f32>(9);
-  assert(m4 as usize == 68464);
+  assert(m4 as usize == 68456);
+  assert(mem::freelist_head as usize == 68504);
+  assert(mem::freelist_head.size.* as usize == 62544);
+  assert(mem::freelist_head.next.* as usize == 0);
+
   let m5 = mem::alloc_array::<f32>(9);
-  assert(m5 as usize == 68528);
+  assert(m5 as usize == 68520);
+  assert(mem::freelist_head as usize == 68568);
+  assert(mem::freelist_head.size.* as usize == 62480);
+  assert(mem::freelist_head.next.* as usize == 0);
+
   let m6 = mem::alloc_array::<f32>(9);
-  assert(m6 as usize == 68592);
+  assert(m6 as usize == 68584);
+  assert(mem::freelist_head as usize == 68632);
+  assert(mem::freelist_head.size.* as usize == 62416);
+  assert(mem::freelist_head.next.* as usize == 0);
+
   mem::dealloc_array::<f32>(m1);
+  assert(mem::freelist_head as usize == 68248);
+  assert(mem::freelist_head.size.* as usize == 40);
+  assert(mem::freelist_head.next.* as usize == 68632);
+
   mem::dealloc_array::<f32>(m2);
+  assert(mem::freelist_head as usize == 68248);
+  assert(mem::freelist_head.size.* as usize == 104);
+  assert(mem::freelist_head.next.* as usize == 68632);
+
   mem::dealloc_array::<f32>(m3);
   mem::dealloc_array::<f32>(m4);
   mem::dealloc_array::<f32>(m5);
   mem::dealloc_array::<f32>(m6);
 
   let m1 = mem::alloc_array::<f32>(2);
-  assert(m6 as usize == 68592);
   mem::dealloc_array::<f32>(m1);
 
   let m1 = mem::alloc_array::<f32>(9);
-  assert(m1 as usize == 68528);
   let m2 = mem::alloc_array::<f32>(9);
-  assert(m2 as usize == 68464);
   mem::dealloc_array::<f32>(m1);
   mem::dealloc_array::<f32>(m2);
 

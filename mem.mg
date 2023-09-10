@@ -64,10 +64,7 @@ fn dealloc_from_ptr(p: usize) {
   let header = (p - padded_header) as *Header;
   header.is_used.* = false;
   header.prev.* = 0;
-  header.next.* = freelist_head as usize;
-  if freelist_head as usize != 0 {
-    freelist_head.prev.* = header as usize;
-  }
+  connect(header, freelist_head);
   freelist_head = header;
 
   let footer = (p + header.size.*) as *Footer;
@@ -126,74 +123,57 @@ fn merge_left(header: *Header): *Header {
     return 0 as *Header;
   }
 
+  let a = left_header.prev.* as *Header;
+  let b = left_header.next.* as *Header;
+  let c = header.prev.* as *Header;
+  let d = header.next.* as *Header;
+
   let new_size = header.size.* + left_header.size.* + padded_header + padded_footer;
   let merged_header = left_header;
   let merged_footer = (header as usize + padded_header + header.size.*) as *Footer;
 
+  let next = freelist_head;
+  if freelist_head == left_header {
+    next = b;
+    if next == header {
+      next = d;
+    }
+  } else if freelist_head == header {
+    next = d;
+    if next == left_header {
+      next = b;
+    }
+  }
+
   merged_header.* = Header{
     size: new_size,
     prev: 0,
-    next: 0,
+    next: next as usize,
     is_used: false,
   };
   merged_footer.* = Footer{
     size: new_size,
     is_used: false,
   };
-  // case 1:
-  //              a --> left --> b                    c --> h --> d
-  // solution:
-  //              a --> b --> merged --> c --> d
-  let a = left_header.prev.* as *Header;
-  let b = left_header.next.* as *Header;
-  let c = header.prev.* as *Header;
-  let d = header.next.* as *Header;
+  next.prev.* = merged_header as usize;
+  freelist_head = merged_header;
 
-  if a != b && a != c && a != d && b != c && b != d && c != d && freelist_head != c {
+  if a != d && b != c {
     connect(a, b);
-    connect(b, merged_header);
-    connect(merged_header, c);
     connect(c, d);
-  }
-  // case 2:
-  //              a --> left --> b       freelist --> c --> h --> d
-  // solution:
-  //              c --> d --> merged --> a --> b
-  let a = left_header.prev.* as *Header;
-  let b = left_header.next.* as *Header;
-  let c = header.prev.* as *Header;
-  let d = header.next.* as *Header;
-  if a != b && a != c && a != d && b != c && b != d && c != d && freelist_head == c {
-    connect(c, d);
-    connect(d, merged_header);
-    connect(merged_header, a);
+  } else if a != d && b == c {
     connect(a, b);
-  }
-
-  // case 3:
-  //              a --> left --> b --> h --> c
-  // solution:
-  //              a --> merged --> b --> c
-  let a = left_header.prev.* as *Header;
-  let b = left_header.next.* as *Header;
-  let c = header.next.* as *Header;
-  if a != b && a != c && b != c && b.next.* == header as usize {
-    connect(a, merged_header);
-    connect(merged_header, b);
-    connect(b, c);
-  }
-
-  // case 4:
-  //              c --> h --> a --> left --> b
-  // solution:
-  //              c --> a --> merged --> b
-  let c = header.prev.* as *Header;
-  let a = header.next.* as *Header;
-  let b = left_header.next.* as *Header;
-  if c != a && c != b && a != b && a.next.* == left_header as usize{
+    connect(c, d);
+  } else if a != d && b == header {
+    connect(a, b);
+  } else if a == d && b != c {
     connect(c, a);
-    connect(a, merged_header);
-    connect(merged_header, b);
+    connect(d, b);
+  } else if d == left_header && b != c {
+    connect(c, b);
+  } else {
+    // impossible state
+    wasm::trap();
   }
 
   return merged_header;
@@ -202,8 +182,6 @@ fn merge_left(header: *Header): *Header {
 fn connect(left: *Header, right: *Header) {
   if left as usize != 0 {
     left.next.* = right as usize;
-  } else {
-    freelist_head = right;
   }
 
   if right as usize != 0 {
