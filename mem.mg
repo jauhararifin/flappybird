@@ -1,6 +1,7 @@
 import wasm "wasm";
 
 let lower_bound: usize = 0;
+let upper_bound: usize = 0;
 let page_size: usize = 65536;
 let freelist_head: *Header = 0 as *Header;
 
@@ -56,7 +57,6 @@ fn alloc_size(size: usize): usize {
   return allocate_from_new_page(size);
 }
 
-// TODO: merge neighboring free chunks together
 fn dealloc_from_ptr(p: usize) {
   let padded_header = pad(header_size);
   let padded_footer = pad(footer_size);
@@ -68,11 +68,147 @@ fn dealloc_from_ptr(p: usize) {
   if freelist_head as usize != 0 {
     freelist_head.prev.* = header as usize;
   }
+  freelist_head = header;
 
   let footer = (p + header.size.*) as *Footer;
   footer.is_used.* = false;
 
-  freelist_head = header;
+  merge(header);
+}
+
+fn merge(header: *Header) {
+  let padded_header = pad(header_size);
+  let padded_footer = pad(footer_size);
+
+  let h = header;
+  while true {
+    let new_header = merge_left(h);
+    if new_header as usize == 0 {
+      break;
+    }
+    h = new_header;
+  }
+
+  while true {
+    let new_header = merge_right(h);
+    if new_header as usize == 0 {
+      break;
+    }
+    h = new_header;
+  }
+}
+
+fn merge_right(header: *Header): *Header {
+  let padded_header = pad(header_size);
+  let padded_footer = pad(footer_size);
+  let next_header = header as usize + padded_header + header.size.* + padded_footer;
+  let next_header = next_header as *Header;
+  return merge_left(next_header);
+}
+
+fn merge_left(header: *Header): *Header {
+  let padded_header = pad(header_size);
+  let padded_footer = pad(footer_size);
+
+  if header as usize >= upper_bound {
+    return 0 as *Header;
+  }
+  if header.is_used.* {
+    return 0 as *Header;
+  }
+
+  let left_footer = (header as usize - padded_footer) as *Footer;
+  let left_header = (left_footer as usize - left_footer.size.* - padded_header) as *Header;
+  if left_header as usize < lower_bound {
+    return 0 as *Header;
+  }
+  if left_header.is_used.* {
+    return 0 as *Header;
+  }
+
+  let new_size = header.size.* + left_header.size.* + padded_header + padded_footer;
+  let merged_header = left_header;
+  let merged_footer = (header as usize + padded_header + header.size.*) as *Footer;
+
+  merged_header.* = Header{
+    size: new_size,
+    prev: 0,
+    next: 0,
+    is_used: false,
+  };
+  merged_footer.* = Footer{
+    size: new_size,
+    is_used: false,
+  };
+  // case 1:
+  //              a --> left --> b                    c --> h --> d
+  // solution:
+  //              a --> b --> merged --> c --> d
+  let a = left_header.prev.* as *Header;
+  let b = left_header.next.* as *Header;
+  let c = header.prev.* as *Header;
+  let d = header.next.* as *Header;
+
+  if a != b && a != c && a != d && b != c && b != d && c != d && freelist_head != c {
+    connect(a, b);
+    connect(b, merged_header);
+    connect(merged_header, c);
+    connect(c, d);
+  }
+  // case 2:
+  //              a --> left --> b       freelist --> c --> h --> d
+  // solution:
+  //              c --> d --> merged --> a --> b
+  let a = left_header.prev.* as *Header;
+  let b = left_header.next.* as *Header;
+  let c = header.prev.* as *Header;
+  let d = header.next.* as *Header;
+  if a != b && a != c && a != d && b != c && b != d && c != d && freelist_head == c {
+    connect(c, d);
+    connect(d, merged_header);
+    connect(merged_header, a);
+    connect(a, b);
+  }
+
+  // case 3:
+  //              a --> left --> b --> h --> c
+  // solution:
+  //              a --> merged --> b --> c
+  let a = left_header.prev.* as *Header;
+  let b = left_header.next.* as *Header;
+  let c = header.next.* as *Header;
+  if a != b && a != c && b != c && b.next.* == header as usize {
+    connect(a, merged_header);
+    connect(merged_header, b);
+    connect(b, c);
+  }
+
+  // case 4:
+  //              c --> h --> a --> left --> b
+  // solution:
+  //              c --> a --> merged --> b
+  let c = header.prev.* as *Header;
+  let a = header.next.* as *Header;
+  let b = left_header.next.* as *Header;
+  if c != a && c != b && a != b && a.next.* == left_header as usize{
+    connect(c, a);
+    connect(a, merged_header);
+    connect(merged_header, b);
+  }
+
+  return merged_header;
+}
+
+fn connect(left: *Header, right: *Header) {
+  if left as usize != 0 {
+    left.next.* = right as usize;
+  } else {
+    freelist_head = right;
+  }
+
+  if right as usize != 0 {
+    right.prev.* = left as usize;
+  }
 }
 
 fn allocate_from_chunk(header: *Header, size: usize): usize {
@@ -140,10 +276,9 @@ fn allocate_from_chunk(header: *Header, size: usize): usize {
   return header as usize + padded_header;
 }
 
-// TODO: when allocating a new page, try to merge it with neighboring chunk
 fn allocate_from_new_page(size: usize): usize {
-  let padded_size = pad(size);
   let padded_header = pad(header_size);
+  let padded_size = pad(size);
   let padded_footer = pad(footer_size);
   let total_size = padded_header + padded_size + padded_footer;
   let n_additional_pages = (total_size + page_size - 1) / page_size;
@@ -154,6 +289,7 @@ fn allocate_from_new_page(size: usize): usize {
     lower_bound = p;
   }
   let total_allocated = n_additional_pages * page_size;
+  upper_bound = p + total_allocated;
 
   let remaining_space = total_allocated - total_size;
   let has_additional_chunk = remaining_space >= padded_header + padded_footer + 8;
@@ -172,9 +308,11 @@ fn allocate_from_new_page(size: usize): usize {
   footer.is_used.* = true;
 
   if has_additional_chunk {
+    let remaining_content_size = remaining_space - padded_header - padded_footer;
+
     let next_chunk = p + padded_header + padded_size + padded_footer;
     let header = next_chunk as *Header;
-    header.size.* = padded_size;
+    header.size.* = remaining_content_size;
     header.next.* = freelist_head as usize;
     header.prev.* = 0;
     header.is_used.* = false;
@@ -183,9 +321,8 @@ fn allocate_from_new_page(size: usize): usize {
       freelist_head.prev.* = header as usize;
     }
 
-    let remaining_content_size = remaining_space - padded_header - padded_footer;
     let footer = (next_chunk + padded_header + remaining_content_size) as *Footer;
-    footer.size.* = padded_size;
+    footer.size.* = remaining_content_size;
     footer.is_used.* = false;
 
     freelist_head = header as *Header;
