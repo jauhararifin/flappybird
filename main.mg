@@ -4,7 +4,8 @@ import webgl "webgl";
 import embed "embed";
 import bitmap "bitmap";
 import mem "mem";
-import base "base";
+import base "components/base";
+import background "components/background";
 import graphic "graphic";
 import state "state";
 
@@ -22,6 +23,7 @@ let s: state::State = state::State{
 
 let drawer: graphic::Drawer;
 let base_component: base::Component;
+let background_component: background::Component;
 
 @wasm_export("on_resize")
 fn on_canvas_resized(new_width: f32, new_height: f32) {
@@ -39,6 +41,11 @@ fn on_load() {
 @wasm_export("on_enter_frame")
 fn on_enter_frame(ts: f32) {
   s.now = ts;
+
+  webgl::clear_color(drawer.ctx, 0.439, 0.752941176, 0.803921569, 1.0);
+  webgl::clear(drawer.ctx, drawer.ctx.COLOR_BUFFER_BIT);
+
+  background::draw(background_component, s);
   base::draw(base_component, s);
 }
 
@@ -46,6 +53,10 @@ fn setup_webgl() {
   window = js::get_window();
 
   drawer = graphic::setup(window);
+
+  background_component = background::setup(drawer, window);
+  background::draw(background_component, s);
+
   base_component = base::setup(drawer, window);
   base::draw(base_component, s);
 }

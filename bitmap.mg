@@ -60,7 +60,6 @@ fn load_image(buff: [*]u8): Image {
     y = y + 1;
   }
 
-
   return Image{
     width: width,
     height: height,

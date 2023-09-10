@@ -13,6 +13,7 @@ struct Component{
   window: js::Window,
   position_buffer: webgl::Buffer,
   tex_coord_buffer: webgl::Buffer,
+  texture: webgl::Texture,
 }
 
 let ratio: f32 = 16.0/42.0;
@@ -57,6 +58,7 @@ fn setup(drawer: graphic::Drawer, window: js::Window): Component {
     window: window,
     position_buffer: position_buffer,
     tex_coord_buffer: tex_coord_buffer,
+    texture: base_texture,
   };
 }
 
@@ -92,6 +94,7 @@ fn draw(c: Component, s: state::State) {
   webgl::uniform_matrix_3fv(c.drawer.ctx, c.drawer.transformUniform, false, matrix);
 
   // set texture to texture 0
+  webgl::bind_texture(c.drawer.ctx, c.drawer.ctx.TEXTURE_2D, c.texture);
   webgl::uniform_1i(c.drawer.ctx, c.drawer.textureUniform, 0);
 
   // set texture translation

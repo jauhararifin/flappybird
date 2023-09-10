@@ -31,6 +31,8 @@ struct RenderingContext {
   uniform2fv: opaque,
   getError: opaque,
   viewport: opaque,
+  clearColor: opaque,
+  clear: opaque,
 
   UNPACK_FLIP_Y_WEBGL: opaque,
   SRC_ALPHA: opaque,
@@ -52,6 +54,7 @@ struct RenderingContext {
   NEAREST: opaque,
   REPEAT: opaque,
   TRIANGLES: opaque,
+  COLOR_BUFFER_BIT: opaque,
 }
 
 struct Shader {
@@ -110,6 +113,8 @@ fn get_context(canvas: js::Canvas): RenderingContext {
   ctx.uniform2fv = env::get_property(ctx.inner, js::str("uniform2fv"));
   ctx.getError = env::get_property(ctx.inner, js::str("getError"));
   ctx.viewport = env::get_property(ctx.inner, js::str("viewport"));
+  ctx.clearColor = env::get_property(ctx.inner, js::str("clearColor"));
+  ctx.clear = env::get_property(ctx.inner, js::str("clear"));
 
   ctx.UNPACK_FLIP_Y_WEBGL = env::get_property(ctx.inner, js::str("UNPACK_FLIP_Y_WEBGL"));
   ctx.SRC_ALPHA = env::get_property(ctx.inner, js::str("SRC_ALPHA"));
@@ -131,6 +136,7 @@ fn get_context(canvas: js::Canvas): RenderingContext {
   ctx.NEAREST = env::get_property(ctx.inner, js::str("NEAREST"));
   ctx.REPEAT = env::get_property(ctx.inner, js::str("REPEAT"));
   ctx.TRIANGLES = env::get_property(ctx.inner, js::str("TRIANGLES"));
+  ctx.COLOR_BUFFER_BIT = env::get_property(ctx.inner, js::str("COLOR_BUFFER_BIT"));
 
   return ctx;
 }
@@ -281,5 +287,18 @@ fn viewport(ctx: RenderingContext, x: i32, y: i32, w: i32, h: i32): opaque {
   return env::call4(
     ctx.inner, ctx.viewport,
     env::number(x as u64), env::number(y as u64), env::number(w as u64), env::number(h as u64),
+  );
+}
+
+fn clear_color(ctx: RenderingContext, r: f32, g: f32, b: f32, a: f32): opaque {
+  return env::call4(
+    ctx.inner, ctx.clearColor,
+    env::numberf32(r), env::numberf32(g), env::numberf32(b), env::numberf32(a),
+  );
+}
+
+fn clear(ctx: RenderingContext, mask: opaque): opaque {
+  return env::call1(
+    ctx.inner, ctx.clear, mask
   );
 }
