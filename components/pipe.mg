@@ -68,6 +68,10 @@ fn setup(drawer: graphic::Drawer, window: js::Window): Component {
 }
 
 fn draw(c: Component, s: state::State) {
+  if s.stage == state::STAGE_READY {
+    return;
+  }
+
   // set position buffer
   webgl::bind_buffer(c.drawer.ctx, c.drawer.ctx.ARRAY_BUFFER, c.position_buffer);
   webgl::vertex_attrib_pointer(c.drawer.ctx, c.drawer.positionAttributeLocation, 2, c.drawer.ctx.FLOAT, false, 0, 0);
