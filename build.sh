@@ -18,3 +18,8 @@ embed favicon_ico favicon.ico >> embed.mg
 magelang compile main -o main.wasm
 
 ./wasm-opt --enable-reference-types --enable-multivalue -O4 main.wasm -o main.opt.wasm
+
+mkdir -p build/
+cp index.html build/index.html
+cp main.js build/main.js
+cp favicon.ico build/favicon.ico
