@@ -72,6 +72,7 @@ fn draw(c: Component, s: state::State) {
   webgl::vertex_attrib_pointer(c.drawer.ctx, c.drawer.textcoordAttributeLocation, 2, c.drawer.ctx.FLOAT, false, 0, 0);
 
   // set texture wrap and filter
+  webgl::bind_texture(c.drawer.ctx, c.drawer.ctx.TEXTURE_2D, c.texture);
   webgl::tex_parameteri(c.drawer.ctx, c.drawer.ctx.TEXTURE_2D, c.drawer.ctx.TEXTURE_WRAP_S, c.drawer.ctx.REPEAT);
   webgl::tex_parameteri(c.drawer.ctx, c.drawer.ctx.TEXTURE_2D, c.drawer.ctx.TEXTURE_WRAP_T, c.drawer.ctx.CLAMP_TO_EDGE);
   webgl::tex_parameteri(c.drawer.ctx, c.drawer.ctx.TEXTURE_2D, c.drawer.ctx.TEXTURE_MIN_FILTER, c.drawer.ctx.NEAREST);
@@ -92,10 +93,6 @@ fn draw(c: Component, s: state::State) {
   mat::mat3_free(m1_m2_m3);
   mat::mat3_free(transposed);
   webgl::uniform_matrix_3fv(c.drawer.ctx, c.drawer.transformUniform, false, matrix);
-
-  // set texture to texture 0
-  webgl::bind_texture(c.drawer.ctx, c.drawer.ctx.TEXTURE_2D, c.texture);
-  webgl::uniform_1i(c.drawer.ctx, c.drawer.textureUniform, 0);
 
   // set texture translation
   let matrix_arr: [*]f32 = mem::alloc_array::<f32>(2);

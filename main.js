@@ -48,7 +48,7 @@ window.onload = function() {
       window.addEventListener('click', function() {
         results.instance.exports.on_click();
       })
-      window.addEventListener('keypress', function() {
+      window.addEventListener('keypress', function(ev) {
         if (ev.key !== " ") return;
         results.instance.exports.on_click();
       })

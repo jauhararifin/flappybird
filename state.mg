@@ -1,4 +1,5 @@
 import mat "mat";
+import env "env";
 
 let STAGE_READY: i32 = 0;
 let STAGE_RUNNING: i32 = 1;
@@ -6,7 +7,7 @@ let STAGE_GAMEOVER: i32 = 2;
 
 let level_speed: f32 = 0.8;
 let jump_speed: f32 = 2.0;
-let gravity: f32 = -3.0 * jump_speed;
+let gravity: f32 = -3.0 * 2.0;
 
 struct State{
   stage: i32,
@@ -36,7 +37,6 @@ fn tap(s: *State) {
     s.stage.* = STAGE_RUNNING;
     s.start_ts.* = s.now.*;
     s.speed.* = jump_speed;
-    s.now.* = 0.0;
   } else if s.stage.* == STAGE_RUNNING {
     if s.y.* < 1.0 {
       s.speed.* = jump_speed;
