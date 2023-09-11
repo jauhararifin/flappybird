@@ -34,7 +34,7 @@ window.onload = function() {
     imports['env']['call' + i] = callHandler;
   }
 
-  WebAssembly.instantiateStreaming(fetch("/main.wasm"), imports).then(
+  WebAssembly.instantiateStreaming(fetch("/main.opt.wasm"), imports).then(
     (results) => {
       memory = results.instance.exports.memory;
       results.instance.exports.on_load();
@@ -44,6 +44,13 @@ window.onload = function() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         results.instance.exports.on_resize(canvas.width, canvas.height);
+      })
+      window.addEventListener('click', function() {
+        results.instance.exports.on_click();
+      })
+      window.addEventListener('keypress', function() {
+        if (ev.key !== " ") return;
+        results.instance.exports.on_click();
       })
 
       function onEnterFrame(ts) {

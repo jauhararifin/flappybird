@@ -44,11 +44,11 @@ fn setup(drawer: graphic::Drawer, window: js::Window): Component {
   webgl::bind_buffer(drawer.ctx, drawer.ctx.ARRAY_BUFFER, tex_coord_buffer);
 
   let tex_coord_data: [*]f32 = mem::alloc_array::<f32>(12);
-  tex_coord_data[ 0].* = 0.0; tex_coord_data[ 1].* = 0.0;
+  tex_coord_data[ 0].* = 0.0; tex_coord_data[ 1].* = -0.5625;
   tex_coord_data[ 2].* = 0.0; tex_coord_data[ 3].* = 1.0;
-  tex_coord_data[ 4].* = 1.0; tex_coord_data[ 5].* = 0.0;
+  tex_coord_data[ 4].* = 1.0; tex_coord_data[ 5].* = -0.5625;
   tex_coord_data[ 6].* = 0.0; tex_coord_data[ 7].* = 1.0;
-  tex_coord_data[ 8].* = 1.0; tex_coord_data[ 9].* = 0.0;
+  tex_coord_data[ 8].* = 1.0; tex_coord_data[ 9].* = -0.5625;
   tex_coord_data[10].* = 1.0; tex_coord_data[11].* = 1.0;
   webgl::buffer_data(drawer.ctx, drawer.ctx.ARRAY_BUFFER, js::new_f32_array(window, tex_coord_data, 12), drawer.ctx.STATIC_DRAW);
   mem::dealloc_array::<f32>(tex_coord_data);

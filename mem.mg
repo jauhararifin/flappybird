@@ -5,6 +5,10 @@ let upper_bound: usize = 0;
 let page_size: usize = 65536;
 let freelist_head: *Header = 0 as *Header;
 
+fn alloc<T>(): *T {
+  return alloc_size(wasm::size_of::<T>()) as *T;
+}
+
 fn alloc_array<T>(len: usize): [*]T {
   return alloc_size(wasm::size_of::<T>() * len) as [*]T;
 }
