@@ -34,7 +34,7 @@ window.onload = function() {
     imports['env']['call' + i] = callHandler;
   }
 
-  WebAssembly.instantiateStreaming(fetch("/main.opt.wasm"), imports).then(
+  WebAssembly.instantiateStreaming(fetch("/main.wasm"), imports).then(
     (results) => {
       memory = results.instance.exports.memory;
       results.instance.exports.on_load();

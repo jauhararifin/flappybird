@@ -4,6 +4,7 @@ import mem "mem";
 import base "components/base";
 import background "components/background";
 import bird "components/bird";
+import pipe "components/pipe";
 import graphic "graphic";
 import state "state";
 
@@ -14,6 +15,7 @@ let drawer: graphic::Drawer;
 let base_component: base::Component;
 let background_component: background::Component;
 let bird_component: bird::Component;
+let pipe_component: pipe::Component;
 
 @wasm_export("on_resize")
 fn on_canvas_resized(new_width: f32, new_height: f32) {
@@ -64,6 +66,7 @@ fn on_enter_frame(ts: f32) {
   webgl::clear(drawer.ctx, drawer.ctx.COLOR_BUFFER_BIT);
 
   background::draw(background_component, s.*);
+  pipe::draw(pipe_component, s.*);
   base::draw(base_component, s.*);
   bird::draw(bird_component, s.*);
 }
@@ -75,6 +78,9 @@ fn setup_webgl() {
 
   background_component = background::setup(drawer, window);
   background::draw(background_component, s.*);
+
+  pipe_component = pipe::setup(drawer, window);
+  pipe::draw(pipe_component, s.*);
 
   base_component = base::setup(drawer, window);
   base::draw(base_component, s.*);
