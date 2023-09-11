@@ -22,4 +22,6 @@ magelang compile main -o main.wasm
 mkdir -p build/
 cp index.html build/index.html
 cp main.js build/main.js
+cp main.wasm build/main.wasm
+cp main.opt.wasm build/main.opt.wasm
 cp favicon.ico build/favicon.ico
