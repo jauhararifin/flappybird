@@ -114,7 +114,7 @@ fn draw(c: Component, s: state::State) {
   let i = k0;
   while i <= k1 {
     let x = first_obstacle_distance + i * obstacle_gap - distance;
-    let y: f32 = 0.5 * 0.8 - 0.4;
+    let y: f32 = randomize(wasm::floor_f32(i) as i32, s.start_ts) as f32 / 4294967296.0 * 0.8 - 0.4;
 
     // draw bottom pipe
     let m1 = mat::mat3_translate(0.0, base::base_portion);
@@ -180,4 +180,29 @@ fn draw(c: Component, s: state::State) {
 
     i = i + 1.0;
   }
+}
+
+fn randomize(i: i32, f: f32): u32 {
+  let f = wasm::floor_f32(f) as u32;
+  return crc32(f) ^ crc32(i as u32);
+}
+
+fn crc32(payload: u32): u32 {
+  let crc: u32 = 4294967295;
+
+  let i = 0;
+  while i < 4 {
+    let byte = payload as u8;
+    payload = payload >> 8;
+    crc = crc ^ (byte as u32);
+    let j = 7;
+    while j >= 0 {
+      let mask = -(crc & 1);
+      crc = (crc >> 1) ^ (3988292384 & mask);
+      j = j - 1;
+    }
+    i = i + 1;
+  }
+
+  return ~crc;
 }
