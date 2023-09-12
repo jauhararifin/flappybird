@@ -5,6 +5,7 @@ import base "components/base";
 import background "components/background";
 import bird "components/bird";
 import pipe "components/pipe";
+import score "components/score";
 import graphic "graphic";
 import state "state";
 
@@ -16,6 +17,7 @@ let base_component: base::Component;
 let background_component: background::Component;
 let bird_component: bird::Component;
 let pipe_component: pipe::Component;
+let score_component: score::Component;
 
 @wasm_export("on_resize")
 fn on_canvas_resized(new_width: f32, new_height: f32) {
@@ -69,6 +71,7 @@ fn on_enter_frame(ts: f32) {
   pipe::draw(pipe_component, s.*);
   base::draw(base_component, s.*);
   bird::draw(bird_component, s.*);
+  score::draw(score_component, s.*);
 }
 
 fn setup_webgl() {
@@ -87,5 +90,8 @@ fn setup_webgl() {
 
   bird_component = bird::setup(drawer, window);
   bird::draw(bird_component, s.*);
+
+  score_component = score::setup(drawer, window);
+  score::draw(score_component, s.*);
 }
 

@@ -15,6 +15,7 @@ embed base_bmp base.bmp >> embed.mg
 embed background_bmp background.bmp >> embed.mg
 embed bird_bmp bird.bmp >> embed.mg
 embed pipe_bmp pipe.bmp >> embed.mg
+embed digits_bmp digits.bmp >> embed.mg
 embed favicon_ico favicon.ico >> embed.mg
 
 magelang compile main -o main.wasm

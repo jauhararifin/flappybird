@@ -25,8 +25,15 @@ struct State{
 
 fn dist(s: State): f32 {
   let elapsed: f32 = s.now;
-  if (s.stage == state::STAGE_GAMEOVER)
+
+  // TODO: check the compiler, check why the commented code below doesn't
+  // throw syntax error.
+  // if (s.stage == state::STAGE_GAMEOVER)
+  //   elapsed = s.gameover_ts;
+
+  if s.stage == STAGE_GAMEOVER {
     elapsed = s.gameover_ts;
+  }
 
   let distance: f32 = (elapsed - s.start_ts) / 1000.0 * level_speed;
   return distance;

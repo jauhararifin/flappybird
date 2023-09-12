@@ -27,3 +27,10 @@ fn floor_f64(v: f64): f64;
 
 @intrinsic("f64.ceil")
 fn ceil_f64(v: f64): f64;
+
+@intrinsic("table.get")
+fn table_get(id: usize): opaque;
+
+@intrinsic("table.set")
+fn table_set(id: usize, val: opaque);
+
