@@ -55,7 +55,6 @@ fn tap(s: *State) {
       s.speed.* = 0.0;
       s.y.* = 0.0;
     }
-    s.now.* = 0.0;
   }
 }
 
@@ -73,8 +72,10 @@ fn tick(s: *State, ts: f32) {
       if s.speed.* < 0.0 {
         s.y.* = s.y.* + s.speed.* * ds;
       }
+      s.speed.* = s.speed.* + gravity * ds;
+    } else {
+      s.y.* = -1.0 - 0.0001;
     }
-    s.speed.* = s.speed.* + gravity * ds;
   }
 }
 
