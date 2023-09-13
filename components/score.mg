@@ -101,7 +101,6 @@ fn draw(c: Component, s: state::State) {
   }
 
   let digits = mem::alloc_array::<i32>(10);
-  env::debug(env::number(digits as u64));
   let n_digits = 0;
   if score == 0 {
     digits[n_digits].* = 0;
