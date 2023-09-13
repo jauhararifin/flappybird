@@ -48,13 +48,16 @@ window.onload = function() {
       })
       window.addEventListener('click', function() {
         results.instance.exports.on_click();
+        return false;
       })
       window.addEventListener('touchstart', function() {
         results.instance.exports.on_click();
+        return false;
       })
       window.addEventListener('keypress', function(ev) {
         if (ev.key !== " ") return;
         results.instance.exports.on_click();
+        return false;
       })
 
       function onEnterFrame(ts) {
