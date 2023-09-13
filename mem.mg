@@ -127,58 +127,49 @@ fn merge_left(header: *Header): *Header {
     return 0 as *Header;
   }
 
-  let a = left_header.prev.* as *Header;
-  let b = left_header.next.* as *Header;
-  let c = header.prev.* as *Header;
-  let d = header.next.* as *Header;
-
   let new_size = header.size.* + left_header.size.* + padded_header + padded_footer;
   let merged_header = left_header;
   let merged_footer = (header as usize + padded_header + header.size.*) as *Footer;
 
-  let next = freelist_head;
-  if freelist_head == left_header {
-    next = b;
-    if next == header {
-      next = d;
-    }
-  } else if freelist_head == header {
-    next = d;
-    if next == left_header {
-      next = b;
-    }
+  // first: remove left from free list
+  if left_header.prev.* as usize != 0 {
+    let prev_header = left_header.prev.* as *Header;
+    prev_header.next.* = left_header.next.* as usize;
+  }
+  if left_header.next.* as usize != 0 {
+    let next_header = left_header.next.* as *Header;
+    next_header.prev.* = left_header.prev.* as usize;
+  }
+  if left_header == freelist_head {
+    freelist_head = left_header.next.* as *Header;
   }
 
+  // second: remove header from free list
+  if header.prev.* as usize != 0 {
+    let prev_header = header.prev.* as *Header;
+    prev_header.next.* = header.next.* as usize;
+  }
+  if header.next.* as usize != 0 {
+    let next_header = header.next.* as *Header;
+    next_header.prev.* = header.prev.* as usize;
+  }
+  if header == freelist_head {
+    freelist_head = header.next.* as *Header;
+  }
+
+  // third: add merged header to free list
   merged_header.* = Header{
     size: new_size,
     prev: 0,
-    next: next as usize,
+    next: 0,
     is_used: false,
   };
+  connect(merged_header, freelist_head);
+  freelist_head = merged_header;
   merged_footer.* = Footer{
     size: new_size,
     is_used: false,
   };
-  next.prev.* = merged_header as usize;
-  freelist_head = merged_header;
-
-  if a != d && b != c {
-    connect(a, b);
-    connect(c, d);
-  } else if a != d && b == c {
-    connect(a, b);
-    connect(c, d);
-  } else if a != d && b == header {
-    connect(a, b);
-  } else if a == d && b != c {
-    connect(c, a);
-    connect(d, b);
-  } else if d == left_header && b != c {
-    connect(c, b);
-  } else {
-    // impossible state
-    wasm::trap();
-  }
 
   return merged_header;
 }
@@ -284,6 +275,9 @@ fn allocate_from_new_page(size: usize): usize {
   header.next.* = freelist_head as usize;
   header.prev.* = 0;
   header.is_used.* = true;
+  if freelist_head as usize != 0 {
+    freelist_head.prev.* = header as usize;
+  }
 
   let footer = (p + padded_header + padded_size) as *Footer;
   footer.size.* = padded_size;
@@ -298,7 +292,6 @@ fn allocate_from_new_page(size: usize): usize {
     header.next.* = freelist_head as usize;
     header.prev.* = 0;
     header.is_used.* = false;
-
     if freelist_head as usize != 0 {
       freelist_head.prev.* = header as usize;
     }
