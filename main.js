@@ -46,20 +46,18 @@ window.onload = function() {
         canvas.height = window.innerHeight;
         results.instance.exports.on_resize(canvas.width, canvas.height);
       })
-      let flag = false;
-      window.addEventListener('click', function() {
-        if (flag) return; flag = true; setTimeout(() => { flag = false }, 100);
+      window.addEventListener('click', function(ev) {
+        ev.preventDefault();
         results.instance.exports.on_click();
         return false;
       })
-      window.addEventListener('touchstart', function() {
-        if (flag) return; flag = true; setTimeout(() => { flag = false }, 100);
+      window.addEventListener('touchend', function(ev) {
+        ev.preventDefault();
         results.instance.exports.on_click();
         return false;
       })
       window.addEventListener('keypress', function(ev) {
         if (ev.key !== " ") return;
-        if (flag) return; flag = true; setTimeout(() => { flag = false }, 100);
         results.instance.exports.on_click();
         return false;
       })
