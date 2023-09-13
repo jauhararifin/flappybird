@@ -1,7 +1,4 @@
 window.onload = function() {
-  const debugCanvas = document.getElementById("debug");
-  const ctx = debugCanvas.getContext("2d");
-
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 

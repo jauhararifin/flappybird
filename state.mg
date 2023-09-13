@@ -73,8 +73,6 @@ fn tick(s: *State, ts: f32) {
         s.y.* = s.y.* + s.speed.* * ds;
       }
       s.speed.* = s.speed.* + gravity * ds;
-    } else {
-      s.y.* = -1.0 - 0.0001;
     }
   }
 }
@@ -87,6 +85,7 @@ fn resize(s: *State, width: f32, height: f32) {
 fn check_collision(
   s: *State,
   bird_box: mat::Polygon,
+  base_box: mat::Polygon,
   pipe_boxes: *vec::Vector::<mat::Polygon>,
 ) {
   if s.stage.* != STAGE_RUNNING {
@@ -98,6 +97,21 @@ fn check_collision(
   while i < bird_box.n {
     let a = bird_box.points[i].*;
     let b = bird_box.points[(i + 1) % bird_box.n].*;
+
+    let j: usize = 0;
+    while j < base_box.n {
+      let c = base_box.points[j].*;
+      let d = base_box.points[(j+1)%base_box.n].*;
+      is_collided = is_intersect(a, b, c, d);
+      if is_collided {
+        break;
+      }
+      j = j + 1;
+    }
+
+    if is_collided {
+      break;
+    }
 
     let j: usize = 0;
     let pipe_boxes_len = vec::len::<mat::Polygon>(pipe_boxes);
@@ -113,9 +127,11 @@ fn check_collision(
         }
         k = k + 1;
       }
+
       if is_collided {
         break;
       }
+
       j = j + 1;
     }
 

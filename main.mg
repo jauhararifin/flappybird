@@ -75,8 +75,9 @@ fn on_enter_frame(ts: f32) {
   bird::draw(bird_component, s.*);
 
   let bounding_boxes = pipe::get_bounding_boxes(pipe_component);
+  let base_box = base::get_bounding_box(base_component);
   let bird_box = bird::get_bounding_box(bird_component);
-  state::check_collision(s, bird_box, bounding_boxes);
+  state::check_collision(s, bird_box, base_box, bounding_boxes);
 }
 
 fn setup_webgl() {
