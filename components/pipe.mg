@@ -9,6 +9,7 @@ import graphic "graphic";
 import mat "mat";
 import state "state";
 import base "components/base";
+import vec "collections/vec";
 
 struct Component{
   drawer: graphic::Drawer,
@@ -16,6 +17,8 @@ struct Component{
   position_buffer: webgl::Buffer,
   tex_coord_buffer: webgl::Buffer,
   texture: webgl::Texture,
+
+  bounding_boxes: *vec::Vector::<mat::Polygon>,
 }
 
 let ratio: f32 = 52.0/320.0;
@@ -58,12 +61,17 @@ fn setup(drawer: graphic::Drawer, window: js::Window): Component {
   webgl::buffer_data(drawer.ctx, drawer.ctx.ARRAY_BUFFER, js::new_f32_array(window, tex_coord_data, 12), drawer.ctx.STATIC_DRAW);
   mem::dealloc_array::<f32>(tex_coord_data);
 
+  let bounding_boxes = mem::alloc::<vec::Vector::<mat::Polygon>>();
+  vec::init::<mat::Polygon>(bounding_boxes);
+
   return Component{
     drawer: drawer,
     window: window,
     position_buffer: position_buffer,
     tex_coord_buffer: tex_coord_buffer,
     texture: pipe_texture,
+
+    bounding_boxes: bounding_boxes,
   };
 }
 
@@ -102,6 +110,26 @@ fn draw(c: Component, s: state::State) {
   mat::mat3_free(transposed);
   webgl::uniform_matrix_3fv(c.drawer.ctx, c.drawer.transformTextUniform, false, matrix);
 
+  let bounding_box_points = mem::alloc_array::<mat::Vec3>(8);
+  bounding_box_points[0].* = mat::vec3(-0.16,  1.0, 1.0);
+  bounding_box_points[1].* = mat::vec3( 0.16,  1.0, 1.0);
+  bounding_box_points[2].* = mat::vec3( 0.16, 0.85, 1.0);
+  bounding_box_points[3].* = mat::vec3( 0.15, 0.85, 1.0);
+  bounding_box_points[4].* = mat::vec3( 0.15, -1.0, 1.0);
+  bounding_box_points[5].* = mat::vec3(-0.15, -1.0, 1.0);
+  bounding_box_points[6].* = mat::vec3(-0.15, 0.85, 1.0);
+  bounding_box_points[7].* = mat::vec3(-0.16, 0.85, 1.0);
+  let n_points: usize = 8;
+
+  // TODO: currently, we need to deallocate the vector items because we can't
+  // pass the deallocate function yet (we don't have function type yet).
+  let i: usize = 0;
+  while i < vec::len::<mat::Polygon>(c.bounding_boxes) {
+    mat::polygon_free(vec::get::<mat::Polygon>(c.bounding_boxes, i));
+    i = i + 1;
+  }
+  vec::clear::<mat::Polygon>(c.bounding_boxes);
+
   let distance: f32 = state::dist(s);
   let dist_range_x0 = -(s.canvas_width / s.canvas_height)/2.0 + distance - 1.0;
   let dist_range_x1 = +(s.canvas_width / s.canvas_height)/2.0 + distance + 1.0;
@@ -127,8 +155,8 @@ fn draw(c: Component, s: state::State) {
     let m1_m2_m3 = mat::mat3_mul(m1_m2, m3);
     let m1_m2_m3_m4 = mat::mat3_mul(m1_m2_m3, m4);
     let m1_m2_m3_m4_m5 = mat::mat3_mul(m1_m2_m3_m4, m5);
-    let m1_m2_m3_m4_m5_m6 = mat::mat3_mul(m1_m2_m3_m4_m5, m6);
-    let transposed = mat::mat3_transpose(m1_m2_m3_m4_m5_m6);
+    let m = mat::mat3_mul(m1_m2_m3_m4_m5, m6);
+    let transposed = mat::mat3_transpose(m);
     let matrix = mat::mat3_to_js(transposed, c.window);
     mat::mat3_free(m1);
     mat::mat3_free(m2);
@@ -140,10 +168,19 @@ fn draw(c: Component, s: state::State) {
     mat::mat3_free(m1_m2_m3);
     mat::mat3_free(m1_m2_m3_m4);
     mat::mat3_free(m1_m2_m3_m4_m5);
-    mat::mat3_free(m1_m2_m3_m4_m5_m6);
     mat::mat3_free(transposed);
     webgl::uniform_matrix_3fv(c.drawer.ctx, c.drawer.transformUniform, false, matrix);
     webgl::draw_arrays(c.drawer.ctx, c.drawer.ctx.TRIANGLES, 0, 6);
+
+    let j: usize = 0;
+    let polygon = mat::new_polygon(n_points);
+    while j < n_points {
+      let point = bounding_box_points[j].*;
+      polygon.points[j].* = mat::mat3_mul_vec3(m, point);
+      j = j + 1;
+    }
+    vec::push::<mat::Polygon>(c.bounding_boxes, polygon);
+    mat::mat3_free(m);
 
     // draw top pipe
     let m1 = mat::mat3_translate(0.0, base::base_portion);
@@ -158,8 +195,8 @@ fn draw(c: Component, s: state::State) {
     let m1_m2_m3_m4 = mat::mat3_mul(m1_m2_m3, m4);
     let m1_m2_m3_m4_m5 = mat::mat3_mul(m1_m2_m3_m4, m5);
     let m1_m2_m3_m4_m5_m6 = mat::mat3_mul(m1_m2_m3_m4_m5, m6);
-    let m1_m2_m3_m4_m5_m6_m7 = mat::mat3_mul(m1_m2_m3_m4_m5_m6, m7);
-    let transposed = mat::mat3_transpose(m1_m2_m3_m4_m5_m6_m7);
+    let m = mat::mat3_mul(m1_m2_m3_m4_m5_m6, m7);
+    let transposed = mat::mat3_transpose(m);
     let matrix = mat::mat3_to_js(transposed, c.window);
     mat::mat3_free(m1);
     mat::mat3_free(m2);
@@ -173,15 +210,38 @@ fn draw(c: Component, s: state::State) {
     mat::mat3_free(m1_m2_m3_m4);
     mat::mat3_free(m1_m2_m3_m4_m5);
     mat::mat3_free(m1_m2_m3_m4_m5_m6);
-    mat::mat3_free(m1_m2_m3_m4_m5_m6_m7);
     mat::mat3_free(transposed);
     webgl::uniform_matrix_3fv(c.drawer.ctx, c.drawer.transformUniform, false, matrix);
     webgl::draw_arrays(c.drawer.ctx, c.drawer.ctx.TRIANGLES, 0, 6);
 
+    let j: usize = 0;
+    let polygon = mat::new_polygon(n_points);
+    while j < n_points {
+      let point = bounding_box_points[j].*;
+      polygon.points[j].* = mat::mat3_mul_vec3(m, point);
+      j = j + 1;
+    }
+    vec::push::<mat::Polygon>(c.bounding_boxes, polygon);
+    mat::mat3_free(m);
+
     i = i + 1.0;
   }
+
+  let i: usize = 0;
+  while i < n_points {
+    mat::vec3_free(bounding_box_points[i].*);
+    i = i + 1;
+  }
+  mem::dealloc_array::<mat::Vec3>(bounding_box_points);
 }
 
+fn get_bounding_boxes(c: Component): *vec::Vector::<mat::Polygon> {
+  return c.bounding_boxes;
+}
+
+// randomize creates random number deterministically based on i and f
+// currently, it uses crc32 to randomize the number
+// TODO: consider using mersenne twister as PRNG.
 fn randomize(i: i32, f: f32): u32 {
   let f = wasm::floor_f32(f) as u32;
   return crc32(f) ^ crc32(i as u32);

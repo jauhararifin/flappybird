@@ -60,3 +60,12 @@ fn int(n: opaque): usize;
 
 @wasm_import("env", "debug")
 fn debug(n: opaque);
+
+@wasm_import("env", "debug2")
+fn debug2(arg1: opaque, arg2: opaque);
+
+@wasm_import("env", "debug8")
+fn debug8(arg1: opaque, arg2: opaque, arg3: opaque, arg4: opaque, arg5: opaque, arg6: opaque, arg7: opaque, arg8: opaque);
+
+@wasm_import("env", "debug10")
+fn debug10(arg1: opaque, arg2: opaque, arg3: opaque, arg4: opaque, arg5: opaque, arg6: opaque, arg7: opaque, arg8: opaque, arg9: opaque, arg10: opaque);

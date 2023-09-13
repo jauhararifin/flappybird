@@ -1,4 +1,5 @@
 import js "js";
+import env "env";
 import webgl "webgl";
 import mem "mem";
 import base "components/base";
@@ -72,6 +73,8 @@ fn on_enter_frame(ts: f32) {
   base::draw(base_component, s.*);
   bird::draw(bird_component, s.*);
   score::draw(score_component, s.*);
+
+  let bounding_boxes = pipe::get_bounding_boxes(pipe_component);
 }
 
 fn setup_webgl() {

@@ -6,3 +6,6 @@ magelang compile tests/mem -o /tmp/tests_mem.wasm
 wasmtime /tmp/tests_mem.wasm --invoke testcase_1
 wasmtime /tmp/tests_mem.wasm --invoke testcase_2
 
+magelang compile tests/vec -o /tmp/tests_vec.wasm
+wasmtime /tmp/tests_vec.wasm --invoke testcase_1
+

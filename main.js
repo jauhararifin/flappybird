@@ -13,6 +13,9 @@ window.onload = function() {
   function callHandler(self, f, ...params) {
     return f.call(self, ...params)
   }
+  function debugHandler(...params) {
+    return console.log(...params)
+  }
   const imports = {
     'env': {
       'get_window': () => window,
@@ -32,6 +35,7 @@ window.onload = function() {
   for (let i = 0; i < 20; i++) {
     imports['env']['new' + i] = newHandler;
     imports['env']['call' + i] = callHandler;
+    imports['env']['debug' + i] = debugHandler;
   }
 
   WebAssembly.instantiateStreaming(fetch("/main.wasm"), imports).then(
