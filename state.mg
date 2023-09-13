@@ -1,5 +1,6 @@
 import mat "mat";
 import env "env";
+import vec "collections/vec";
 
 let STAGE_READY: i32 = 0;
 let STAGE_RUNNING: i32 = 1;
@@ -80,5 +81,67 @@ fn tick(s: *State, ts: f32) {
 fn resize(s: *State, width: f32, height: f32) {
   s.canvas_width.* = width;
   s.canvas_height.* = height;
+}
+
+fn check_collision(
+  s: *State,
+  bird_box: mat::Polygon,
+  pipe_boxes: *vec::Vector::<mat::Polygon>,
+) {
+  if s.stage.* != STAGE_RUNNING {
+    return;
+  }
+
+  let is_collided = false;
+  let i: usize = 0;
+  while i < bird_box.n {
+    let a = bird_box.points[i].*;
+    let b = bird_box.points[(i + 1) % bird_box.n].*;
+
+    let j: usize = 0;
+    let pipe_boxes_len = vec::len::<mat::Polygon>(pipe_boxes);
+    while j < pipe_boxes_len {
+      let polygon = vec::get::<mat::Polygon>(pipe_boxes, j);
+      let k: usize = 0;
+      while k < polygon.n {
+        let c = polygon.points[k].*;
+        let d = polygon.points[(k+1)%polygon.n].*;
+        is_collided = is_intersect(a, b, c, d);
+        if is_collided {
+          break;
+        }
+        k = k + 1;
+      }
+      if is_collided {
+        break;
+      }
+      j = j + 1;
+    }
+
+    if is_collided {
+      break;
+    }
+
+    i = i + 1;
+  }
+
+  if is_collided {
+    s.stage.* = STAGE_GAMEOVER;
+    s.gameover_ts.* = s.now.*;
+  }
+}
+
+fn is_ccw(a: mat::Vec3, b: mat::Vec3, c: mat::Vec3): bool {
+  let ax = a.v[0].*;
+  let ay = a.v[1].*;
+  let bx = b.v[0].*;
+  let by = b.v[1].*;
+  let cx = c.v[0].*;
+  let cy = c.v[1].*;
+  return ((cy - ay) * (bx - ax)) > ((by - ay) * (cx - ax));
+}
+
+fn is_intersect(a: mat::Vec3, b: mat::Vec3, c: mat::Vec3, d: mat::Vec3): bool {
+  return (is_ccw(a, c, d) != is_ccw(b, c, d)) && (is_ccw(a, b, c) != is_ccw(a, b, d));
 }
 

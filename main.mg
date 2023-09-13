@@ -71,10 +71,12 @@ fn on_enter_frame(ts: f32) {
   background::draw(background_component, s.*);
   pipe::draw(pipe_component, s.*);
   base::draw(base_component, s.*);
-  bird::draw(bird_component, s.*);
   score::draw(score_component, s.*);
+  bird::draw(bird_component, s.*);
 
   let bounding_boxes = pipe::get_bounding_boxes(pipe_component);
+  let bird_box = bird::get_bounding_box(bird_component);
+  state::check_collision(s, bird_box, bounding_boxes);
 }
 
 fn setup_webgl() {
@@ -91,10 +93,10 @@ fn setup_webgl() {
   base_component = base::setup(drawer, window);
   base::draw(base_component, s.*);
 
-  bird_component = bird::setup(drawer, window);
-  bird::draw(bird_component, s.*);
-
   score_component = score::setup(drawer, window);
   score::draw(score_component, s.*);
+
+  bird_component = bird::setup(drawer, window);
+  bird::draw(bird_component, s.*);
 }
 

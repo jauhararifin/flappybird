@@ -1,4 +1,5 @@
 import mem "mem";
+import env "env";
 import js "js";
 
 struct Vec3 {
@@ -45,6 +46,20 @@ fn polygon_free(p: Polygon) {
     i = i + 1;
   }
   mem::dealloc_array::<Vec3>(p.points);
+}
+
+fn polygon_to_js(window: js::Window, p: Polygon): opaque {
+  let Array = env::get_property(window.inner, js::str("Array"));
+  let arr = env::new0(Array);
+  let push = env::get_property(arr, js::str("push"));
+
+  let i: usize = 0;
+  while i < p.n {
+    let point = js::new_f32_array(window, p.points[i].*.v, 3);
+    env::call1(arr, push, point);
+    i = i + 1;
+  }
+  return arr;
 }
 
 fn mat3_mul_polygon(m: Mat3, p: Polygon) {
