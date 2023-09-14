@@ -51,7 +51,7 @@ window.onload = function() {
         results.instance.exports.on_click();
         return false;
       })
-      window.addEventListener('touchend', function(ev) {
+      window.addEventListener('touchstart', function(ev) {
         ev.preventDefault();
         results.instance.exports.on_click();
         return false;
