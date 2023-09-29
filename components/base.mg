@@ -1,5 +1,4 @@
 import bitmap "bitmap";
-import embed "embed";
 import webgl "webgl";
 import mem "mem";
 import js "js";
@@ -17,6 +16,9 @@ struct Component{
   bounding_box: *mat::Polygon,
 }
 
+@embed_file("./assets/base.bmp")
+let base_bmp: [*]u8;
+
 let ratio: f32 = 16.0/42.0;
 let base_portion: f32 = 0.15;
 
@@ -24,7 +26,7 @@ fn setup(drawer: graphic::Drawer, window: js::Window): Component {
   let base_texture = webgl::create_texture(drawer.ctx);
   webgl::bind_texture(drawer.ctx, drawer.ctx.TEXTURE_2D, base_texture);
 
-  let base_image = bitmap::load_image(embed::base_bmp);
+  let base_image = bitmap::load_image(base_bmp);
   let image_data = bitmap::image_to_js(window, base_image);
   webgl::tex_image_2d(drawer.ctx, drawer.ctx.TEXTURE_2D, 0, drawer.ctx.RGBA, drawer.ctx.RGBA, drawer.ctx.UNSIGNED_BYTE, image_data);
 

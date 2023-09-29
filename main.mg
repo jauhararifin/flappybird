@@ -1,5 +1,4 @@
 import js "js";
-import env "env";
 import webgl "webgl";
 import mem "mem";
 import base "components/base";

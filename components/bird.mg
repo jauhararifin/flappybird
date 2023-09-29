@@ -1,5 +1,4 @@
 import bitmap "bitmap";
-import embed "embed";
 import webgl "webgl";
 import wasm "wasm";
 import mem "mem";
@@ -19,6 +18,9 @@ struct Component{
   bounding_box: *mat::Polygon,
 }
 
+@embed_file("./assets/bird.bmp")
+let bird_bmp: [*]u8;
+
 let ratio: f32 = 45.0/30.0;
 let portion: f32 = 0.07;
 
@@ -26,7 +28,7 @@ fn setup(drawer: graphic::Drawer, window: js::Window): Component {
   let bird_texture = webgl::create_texture(drawer.ctx);
   webgl::bind_texture(drawer.ctx, drawer.ctx.TEXTURE_2D, bird_texture);
 
-  let image = bitmap::load_image(embed::bird_bmp);
+  let image = bitmap::load_image(bird_bmp);
   let image_data = bitmap::image_to_js(window, image);
   webgl::tex_image_2d(drawer.ctx, drawer.ctx.TEXTURE_2D, 0, drawer.ctx.RGBA, drawer.ctx.RGBA, drawer.ctx.UNSIGNED_BYTE, image_data);
 

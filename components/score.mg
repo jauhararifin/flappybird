@@ -1,5 +1,4 @@
 import bitmap "bitmap";
-import embed "embed";
 import webgl "webgl";
 import mem "mem";
 import js "js";
@@ -16,6 +15,9 @@ struct Component{
   texture: webgl::Texture,
   x_offset: [*]f32,
 }
+
+@embed_file("./assets/digits.bmp")
+let digits_bmp: [*]u8;
 
 let ratio: f32 = 482.0/72.0;
 let portion: f32 = 0.08;
@@ -76,7 +78,7 @@ fn setup(drawer: graphic::Drawer, window: js::Window): Component {
 
   let texture = webgl::create_texture(drawer.ctx);
   webgl::bind_texture(drawer.ctx, drawer.ctx.TEXTURE_2D, texture);
-  let image = bitmap::load_image(embed::digits_bmp);
+  let image = bitmap::load_image(digits_bmp);
   let image_data = bitmap::image_to_js(window, image);
   webgl::tex_image_2d(drawer.ctx, drawer.ctx.TEXTURE_2D, 0, drawer.ctx.RGBA, drawer.ctx.RGBA, drawer.ctx.UNSIGNED_BYTE, image_data);
 

@@ -1,5 +1,4 @@
 import bitmap "bitmap";
-import embed "embed";
 import webgl "webgl";
 import mem "mem";
 import js "js";
@@ -15,6 +14,9 @@ struct Component{
   texture: webgl::Texture,
 }
 
+@embed_file("./assets/background.bmp")
+let background_bmp: [*]u8;
+
 let ratio: f32 = 128.0/200.0;
 let portion: f32 = 0.4;
 
@@ -22,7 +24,7 @@ fn setup(drawer: graphic::Drawer, window: js::Window): Component {
   let background_texture = webgl::create_texture(drawer.ctx);
   webgl::bind_texture(drawer.ctx, drawer.ctx.TEXTURE_2D, background_texture);
 
-  let image = bitmap::load_image(embed::background_bmp);
+  let image = bitmap::load_image(background_bmp);
   let image_data = bitmap::image_to_js(window, image);
   webgl::tex_image_2d(drawer.ctx, drawer.ctx.TEXTURE_2D, 0, drawer.ctx.RGBA, drawer.ctx.RGBA, drawer.ctx.UNSIGNED_BYTE, image_data);
 

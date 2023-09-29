@@ -1,5 +1,4 @@
 import mat "mat";
-import env "env";
 import vec "collections/vec";
 
 let STAGE_READY: i32 = 0;

@@ -1,6 +1,5 @@
 import wasm "wasm";
 import bitmap "bitmap";
-import embed "embed";
 import webgl "webgl";
 import mem "mem";
 import js "js";
@@ -20,6 +19,9 @@ struct Component{
   bounding_boxes: *vec::Vector::<mat::Polygon>,
 }
 
+@embed_file("./assets/pipe.bmp")
+let pipe_bmp: [*]u8;
+
 let ratio: f32 = 52.0/320.0;
 let portion: f32 = 1.0;
 let first_obstacle_distance: f32 = 0.8*5.0;
@@ -30,7 +32,7 @@ fn setup(drawer: graphic::Drawer, window: js::Window): Component {
   let pipe_texture = webgl::create_texture(drawer.ctx);
   webgl::bind_texture(drawer.ctx, drawer.ctx.TEXTURE_2D, pipe_texture);
 
-  let image = bitmap::load_image(embed::pipe_bmp);
+  let image = bitmap::load_image(pipe_bmp);
   let image_data = bitmap::image_to_js(window, image);
   webgl::tex_image_2d(drawer.ctx, drawer.ctx.TEXTURE_2D, 0, drawer.ctx.RGBA, drawer.ctx.RGBA, drawer.ctx.UNSIGNED_BYTE, image_data);
 
