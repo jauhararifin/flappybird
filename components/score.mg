@@ -4,7 +4,6 @@ import webgl "webgl";
 import mem "mem";
 import js "js";
 import wasm "wasm";
-import env "env";
 import graphic "graphic";
 import mat "mat";
 import state "state";

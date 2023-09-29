@@ -1,6 +1,4 @@
 import mem "mem";
-import env "env";
-import js "js";
 
 struct Vector<T>{
   arr: [*]T,
