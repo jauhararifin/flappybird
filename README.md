@@ -16,17 +16,13 @@ To compile this game, you must first install the Magelang compiler.
 2. Installing magelang compiler
 
 ```bash
-# First, you need to clone the repository
-git clone https://github.com/jauhararifin/magelang
-cd magelang
-
-# At the time of writing this project, Magelang has not been officially released. 
+# At the time of writing this project, Magelang has not been officially released.
 # The game was compiled using Magelang with this commit ID: 0d76122d76f90307d5724136605ee70e2b438253.
-# Check out to this commit ID to ensure version compatibility.
-git checkout 0d76122d76f90307d5724136605ee70e2b438253
-
-# Compile and install the Magelang compiler
-cargo install --path magelang
+# Use this commit ID to install Magelang to ensure version compatibility.
+cargo install \
+    --git https://github.com/jauhararifin/magelang.git \
+    --rev 0d76122d76f90307d5724136605ee70e2b438253 \
+    magelang
 
 # Verify the installation
 magelang --version
@@ -35,7 +31,11 @@ magelang --version
 3. Run the build script
 
 ```bash
-# Execute the build script
+# Clone the flappybird repository
+git clone https://github.com/jauhararifin/flappybird.git
+cd flappybird
+
+# Execute the build script:
 bash ./build.sh
 ```
 
