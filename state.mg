@@ -26,11 +26,6 @@ struct State{
 fn dist(s: State): f32 {
   let elapsed: f32 = s.now;
 
-  // TODO: check the compiler, check why the commented code below doesn't
-  // throw syntax error.
-  // if (s.stage == state::STAGE_GAMEOVER)
-  //   elapsed = s.gameover_ts;
-
   if s.stage == STAGE_GAMEOVER {
     elapsed = s.gameover_ts;
   }
