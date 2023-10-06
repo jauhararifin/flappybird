@@ -16,7 +16,7 @@ struct Component{
   tex_coord_buffer: webgl::Buffer,
   texture: webgl::Texture,
 
-  bounding_boxes: *vec::Vector::<mat::Polygon>,
+  bounding_boxes: *vec::Vector<mat::Polygon>,
 }
 
 @embed_file("./assets/pipe.bmp")
@@ -62,7 +62,7 @@ fn setup(drawer: graphic::Drawer, window: js::Window): Component {
   webgl::buffer_data(drawer.ctx, drawer.ctx.ARRAY_BUFFER, js::new_f32_array(window, tex_coord_data, 12), drawer.ctx.STATIC_DRAW);
   mem::dealloc_array::<f32>(tex_coord_data);
 
-  let bounding_boxes = mem::alloc::<vec::Vector::<mat::Polygon>>();
+  let bounding_boxes = mem::alloc::<vec::Vector<mat::Polygon>>();
   vec::init::<mat::Polygon>(bounding_boxes);
 
   return Component{
@@ -236,7 +236,7 @@ fn draw(c: Component, s: state::State) {
   mem::dealloc_array::<mat::Vec3>(bounding_box_points);
 }
 
-fn get_bounding_boxes(c: Component): *vec::Vector::<mat::Polygon> {
+fn get_bounding_boxes(c: Component): *vec::Vector<mat::Polygon> {
   return c.bounding_boxes;
 }
 

@@ -80,7 +80,7 @@ fn check_collision(
   s: *State,
   bird_box: mat::Polygon,
   base_box: mat::Polygon,
-  pipe_boxes: *vec::Vector::<mat::Polygon>,
+  pipe_boxes: *vec::Vector<mat::Polygon>,
 ) {
   if s.stage.* != STAGE_RUNNING {
     return;

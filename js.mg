@@ -8,6 +8,7 @@ struct Window {
   inner: opaque,
   document: Document,
   console: Console,
+  add_event_listener: opaque,
 }
 
 struct Document {
@@ -36,11 +37,18 @@ fn get_window(): Window {
   let log = env::get_property(console.inner, str("log"));
   console.log = log;
 
+  let add_event_listener = env::get_property(inner, str("addEventListener"));
+
   return Window {
     inner: inner,
     document: document,
     console: console,
+    add_event_listener: add_event_listener,
   };
+}
+
+fn add_event_listener(window: Window, event: [*]u8, callback: fn(opaque): opaque) {
+  env::call2(window.inner, window.add_event_listener, str(event), env::func(callback));
 }
 
 fn get_element_by_id(document: Document, id: [*]u8): opaque {

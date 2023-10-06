@@ -1,8 +1,6 @@
 window.onload = function() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-
   let memory;
+  let func_table;
   const decoder = new TextDecoder();
   function newHandler(constructor, ...params) {
     return new constructor(...params);
@@ -23,7 +21,14 @@ window.onload = function() {
       'number': (n) => Number(n),
       'numberf32': (n) => Number(n),
       'bool': (n) => Boolean(n),
-      'int': (n) => BigInt(n),
+      'int': (n) => n,
+      'func': (func_id) => {
+        console.log(arguments);
+        return function(...params) {
+          let wasm_func = func_table.get(func_id);
+          return wasm_func(...params)
+        }
+      },
       'debug': (value) => {
         console.log('debug', value);
       },
@@ -38,14 +43,9 @@ window.onload = function() {
   WebAssembly.instantiateStreaming(fetch("/main.wasm"), imports).then(
     (results) => {
       memory = results.instance.exports.memory;
+      func_table = results.instance.exports.func_table;
       results.instance.exports.on_load();
-      results.instance.exports.on_resize(canvas.width, canvas.height);
 
-      window.addEventListener('resize', function() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        results.instance.exports.on_resize(canvas.width, canvas.height);
-      })
       window.addEventListener('click', function(ev) {
         ev.preventDefault();
         results.instance.exports.on_click();

@@ -58,6 +58,9 @@ fn as_bool(n: bool): opaque;
 @wasm_import("env", "int")
 fn int(n: opaque): usize;
 
+@wasm_import("env", "func")
+fn func(f: fn(opaque): opaque): opaque;
+
 @wasm_import("env", "debug")
 fn debug(n: opaque);
 

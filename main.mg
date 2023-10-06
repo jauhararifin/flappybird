@@ -1,3 +1,4 @@
+import env "env";
 import js "js";
 import webgl "webgl";
 import mem "mem";
@@ -19,23 +20,38 @@ let bird_component: bird::Component;
 let pipe_component: pipe::Component;
 let score_component: score::Component;
 
-@wasm_export("on_resize")
-fn on_canvas_resized(new_width: f32, new_height: f32) {
+@wasm_export("on_load")
+fn on_load() {
+  window = js::get_window();
+
   setup_state();
-  state::resize(s, new_width, new_height);
+  setup_webgl();
+
+  on_canvas_resized(null);
+
+  js::add_event_listener(window, "resize", on_canvas_resized);
+}
+
+@wasm_export("on_resize")
+fn on_canvas_resized(arguments: opaque): opaque {
+  setup_state();
+
+  let canvas = js::get_element_by_id(window.document, "canvas");
+  let new_width = env::int(env::get_property(window.inner, js::str("innerWidth")));
+  let new_height = env::int(env::get_property(window.inner, js::str("innerHeight")));
+  env::set_property(canvas, js::str("width"), env::number(new_width as u64));
+  env::set_property(canvas, js::str("height"), env::number(new_height as u64));
+
+  state::resize(s, new_width as f32, new_height as f32);
   webgl::viewport(drawer.ctx, 0, 0, s.canvas_width.* as i32, s.canvas_height.* as i32);
+
+  return null;
 }
 
 @wasm_export("on_click")
 fn on_canvas_clicked() {
   setup_state();
   state::tap(s);
-}
-
-@wasm_export("on_load")
-fn on_load() {
-  setup_state();
-  setup_webgl();
 }
 
 fn setup_state() {
@@ -80,8 +96,6 @@ fn on_enter_frame(ts: f32) {
 }
 
 fn setup_webgl() {
-  window = js::get_window();
-
   drawer = graphic::setup(window);
 
   background_component = background::setup(drawer, window);
