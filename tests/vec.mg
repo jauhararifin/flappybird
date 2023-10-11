@@ -4,7 +4,7 @@ import wasm "wasm";
 
 @wasm_export("testcase_1")
 fn testcase_1() {
-  let v = mem::alloc::<vec::Vector::<i32>>();
+  let v = mem::alloc::<vec::Vector<i32>>();
   vec::init::<i32>(v);
 
   let k = 0;

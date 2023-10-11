@@ -40,7 +40,7 @@ window.onload = function() {
     imports['env']['debug' + i] = debugHandler;
   }
 
-  WebAssembly.instantiateStreaming(fetch("/main.wasm"), imports).then(
+  WebAssembly.instantiateStreaming(fetch("/main.opt.wasm"), imports).then(
     (results) => {
       memory = results.instance.exports.memory;
       func_table = results.instance.exports.func_table;
