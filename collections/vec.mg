@@ -39,10 +39,8 @@ fn push<T>(vec: *Vector<T>, item: T) {
     }
 
     let arr = mem::alloc_array::<T>(new_cap);
-    let i: usize = 0;
-    while i < vec.len.* {
+    for let i: usize = 0; i < vec.len.*; i += 1 {
       arr[i].* = vec.arr.*[i].*;
-      i = i + 1;
     }
 
     vec.cap.* = new_cap;
@@ -50,7 +48,7 @@ fn push<T>(vec: *Vector<T>, item: T) {
   }
 
   vec.arr.*[vec.len.*].* = item;
-  vec.len.* = vec.len.* + 1;
+  vec.len.* += 1;
 }
 
 // note that if you use heap to allocate the elements, you need to deallocate

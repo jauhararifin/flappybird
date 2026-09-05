@@ -59,14 +59,14 @@ fn tick(s: *State, ts: f32) {
   if s.stage.* == STAGE_READY {
     s.y.* = mat::sin(s.now.* / 200.0) * 0.07;
   } else if s.stage.* == STAGE_RUNNING {
-    s.y.* = s.y.* + s.speed.* * ds;
-    s.speed.* = s.speed.* + gravity * ds;
+    s.y.* += s.speed.* * ds;
+    s.speed.* += gravity * ds;
   } else {
     if s.y.* > -1.0 {
       if s.speed.* < 0.0 {
-        s.y.* = s.y.* + s.speed.* * ds;
+        s.y.* += s.speed.* * ds;
       }
-      s.speed.* = s.speed.* + gravity * ds;
+      s.speed.* += gravity * ds;
     }
   }
 }
@@ -87,53 +87,43 @@ fn check_collision(
   }
 
   let is_collided = false;
-  let i: usize = 0;
-  while i < bird_box.n {
+  for let i: usize = 0; i < bird_box.n; i += 1 {
     let a = bird_box.points[i].*;
     let b = bird_box.points[(i + 1) % bird_box.n].*;
 
-    let j: usize = 0;
-    while j < base_box.n {
+    for let j: usize = 0; j < base_box.n; j += 1 {
       let c = base_box.points[j].*;
       let d = base_box.points[(j+1)%base_box.n].*;
       is_collided = is_intersect(a, b, c, d);
       if is_collided {
         break;
       }
-      j = j + 1;
     }
 
     if is_collided {
       break;
     }
 
-    let j: usize = 0;
     let pipe_boxes_len = vec::len::<mat::Polygon>(pipe_boxes);
-    while j < pipe_boxes_len {
+    for let j: usize = 0; j < pipe_boxes_len; j += 1 {
       let polygon = vec::get::<mat::Polygon>(pipe_boxes, j);
-      let k: usize = 0;
-      while k < polygon.n {
+      for let k: usize = 0; k < polygon.n; k += 1 {
         let c = polygon.points[k].*;
         let d = polygon.points[(k+1)%polygon.n].*;
         is_collided = is_intersect(a, b, c, d);
         if is_collided {
           break;
         }
-        k = k + 1;
       }
 
       if is_collided {
         break;
       }
-
-      j = j + 1;
     }
 
     if is_collided {
       break;
     }
-
-    i = i + 1;
   }
 
   if is_collided {

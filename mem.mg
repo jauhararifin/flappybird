@@ -192,7 +192,7 @@ fn allocate_from_chunk(header: *Header, size: usize): usize {
   let remaining_space = header.size.* - padded_size;
   let has_additional_chunk = remaining_space >= padded_header + padded_footer + 8;
   if !has_additional_chunk {
-    padded_size = padded_size + remaining_space;
+    padded_size += remaining_space;
   }
 
   header.is_used.* = true;
@@ -267,7 +267,7 @@ fn allocate_from_new_page(size: usize): usize {
   let remaining_space = total_allocated - total_size;
   let has_additional_chunk = remaining_space >= padded_header + padded_footer + 8;
   if !has_additional_chunk {
-    padded_size = padded_size + remaining_space;
+    padded_size += remaining_space;
   }
 
   let header = p as *Header;

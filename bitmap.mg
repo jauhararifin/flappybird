@@ -42,11 +42,8 @@ fn load_image(buff: [*]u8): Image {
 
   let pixels = mem::alloc_array::<Color>((width * height) as usize);
   let row_size = width * 4;
-  let x: u64 = 0;
-  let y: u64 = 0;
-  while y < height {
-    x = 0;
-    while x < width {
+  for let y: u64 = 0; y < height; y += 1 {
+    for let x: u64 = 0; x < width; x += 1 {
       let b = pixel_p[y * row_size + x*4 + 0].*;
       let g = pixel_p[y * row_size + x*4 + 1].*;
       let r = pixel_p[y * row_size + x*4 + 2].*;
@@ -55,9 +52,7 @@ fn load_image(buff: [*]u8): Image {
 
       let yy = height-1-y;
       pixels[yy*width + x].* = color;
-      x = x + 1;
     }
-    y = y + 1;
   }
 
   return Image{

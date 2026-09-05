@@ -36,8 +36,7 @@ fn setup(drawer: graphic::Drawer, window: js::Window): Component {
   x_offset[8].* = 0.7966804979253111;
   x_offset[9].* = 0.9004149377593361;
 
-  let i = 0;
-  while i < 10 {
+  for let i = 0; i < 10; i += 1 {
     let next_offset: f32 = 1.0;
     if i < 9 {
       next_offset = x_offset[i+1].*;
@@ -47,6 +46,7 @@ fn setup(drawer: graphic::Drawer, window: js::Window): Component {
     let r = ratio * w;
 
     let position_data: [*]f32 = mem::alloc_array::<f32>(12);
+    defer mem::dealloc_array::<f32>(position_data);
     position_data[ 0].* = -r; position_data[ 1].* = -1.0;
     position_data[ 2].* = -r; position_data[ 3].* = 1.0;
     position_data[ 4].* =  r; position_data[ 5].* = -1.0;
@@ -56,9 +56,9 @@ fn setup(drawer: graphic::Drawer, window: js::Window): Component {
     let position_buffer = webgl::create_buffer(drawer.ctx);
     webgl::bind_buffer(drawer.ctx, drawer.ctx.ARRAY_BUFFER, position_buffer);
     webgl::buffer_data(drawer.ctx, drawer.ctx.ARRAY_BUFFER, js::new_f32_array(window, position_data, 12), drawer.ctx.STATIC_DRAW);
-    mem::dealloc_array::<f32>(position_data);
 
     let tex_coord_data: [*]f32 = mem::alloc_array::<f32>(12);
+    defer mem::dealloc_array::<f32>(tex_coord_data);
     tex_coord_data[ 0].* = x_offset[i].*;     tex_coord_data[ 1].* = 0.0;
     tex_coord_data[ 2].* = x_offset[i].*;     tex_coord_data[ 3].* = 1.0;
     tex_coord_data[ 4].* = next_offset - eps; tex_coord_data[ 5].* = 0.0;
@@ -68,12 +68,9 @@ fn setup(drawer: graphic::Drawer, window: js::Window): Component {
     let tex_coord_buffer = webgl::create_buffer(drawer.ctx);
     webgl::bind_buffer(drawer.ctx, drawer.ctx.ARRAY_BUFFER, tex_coord_buffer);
     webgl::buffer_data(drawer.ctx, drawer.ctx.ARRAY_BUFFER, js::new_f32_array(window, tex_coord_data, 12), drawer.ctx.STATIC_DRAW);
-    mem::dealloc_array::<f32>(tex_coord_data);
 
     wasm::table_set( 0 + i as usize, position_buffer.inner);
     wasm::table_set(10 + i as usize, tex_coord_buffer.inner);
-
-    i = i + 1;
   }
 
   let texture = webgl::create_texture(drawer.ctx);
@@ -102,28 +99,25 @@ fn draw(c: Component, s: state::State) {
   }
 
   let digits = mem::alloc_array::<i32>(10);
+  defer mem::dealloc_array::<i32>(digits);
   let n_digits = 0;
   if score == 0 {
     digits[n_digits].* = 0;
-    n_digits = n_digits + 1;
+    n_digits += 1;
   } else {
-    while score > 0 {
+    for ; score > 0; score /= 10 {
       digits[n_digits].* = score % 10;
-      n_digits = n_digits + 1;
-      score = score / 10;
+      n_digits += 1;
     }
   }
-  let i = 0;
-  while i < n_digits / 2 {
+  for let i = 0; i < n_digits / 2; i += 1 {
     let tmp = digits[i].*;
     digits[i].* = digits[n_digits-1-i].*;
     digits[n_digits-1-i].* = tmp;
-    i = i + 1;
   }
 
   let total_width: f32 = 0.0;
-  let i = 0;
-  while i < n_digits {
+  for let i = 0; i < n_digits; i += 1 {
     let digit = digits[i].*;
     let x0 = c.x_offset[digit].*;
     let x1: f32 = 1.0;
@@ -131,14 +125,11 @@ fn draw(c: Component, s: state::State) {
       x1 = c.x_offset[digit+1].*;
     }
     let w = x1 - x0;
-    total_width = total_width + w * ratio * 2.0;
-
-    i = i + 1;
+    total_width += w * ratio * 2.0;
   }
 
-  let i = 0;
   let offset: f32 = 0.0;
-  while i < n_digits {
+  for let i = 0; i < n_digits; i += 1 {
     let digit = digits[i].*;
 
     // set position buffer
@@ -167,48 +158,45 @@ fn draw(c: Component, s: state::State) {
 
     // creating transformation matrix
     let m1 = mat::mat3_translate(0.0, 0.6);
+    defer mat::mat3_free(m1);
     let m2 = mat::mat3_scale(portion, portion);
+    defer mat::mat3_free(m2);
     let m3 = mat::mat3_scale(s.canvas_height/s.canvas_width, 1.0);
+    defer mat::mat3_free(m3);
     let m4 = mat::mat3_translate(-total_width/2.0+offset, 0.0);
+    defer mat::mat3_free(m4);
     let m5 = mat::mat3_translate(w*ratio, 0.0);
+    defer mat::mat3_free(m5);
     let m1_m2 = mat::mat3_mul(m1, m2);
+    defer mat::mat3_free(m1_m2);
     let m1_m2_m3 = mat::mat3_mul(m1_m2, m3);
+    defer mat::mat3_free(m1_m2_m3);
     let m1_m2_m3_m4 = mat::mat3_mul(m1_m2_m3, m4);
+    defer mat::mat3_free(m1_m2_m3_m4);
     let m1_m2_m3_m4_m5 = mat::mat3_mul(m1_m2_m3_m4, m5);
+    defer mat::mat3_free(m1_m2_m3_m4_m5);
     let transposed = mat::mat3_transpose(m1_m2_m3_m4_m5);
+    defer mat::mat3_free(transposed);
     let matrix = mat::mat3_to_js(transposed, c.window);
-    mat::mat3_free(m1);
-    mat::mat3_free(m2);
-    mat::mat3_free(m3);
-    mat::mat3_free(m4);
-    mat::mat3_free(m5);
-    mat::mat3_free(m1_m2);
-    mat::mat3_free(m1_m2_m3);
-    mat::mat3_free(m1_m2_m3_m4);
-    mat::mat3_free(m1_m2_m3_m4_m5);
-    mat::mat3_free(transposed);
     webgl::uniform_matrix_3fv(c.drawer.ctx, c.drawer.transformUniform, false, matrix);
 
     // set texture translation
     let matrix_arr: [*]f32 = mem::alloc_array::<f32>(2);
+    defer mem::dealloc_array::<f32>(matrix_arr);
     matrix_arr[0].* = 0.0; matrix_arr[1].* = 0.0;
     let matrix = js::new_f32_array(c.window, matrix_arr, 2);
-    mem::dealloc_array::<f32>(matrix_arr);
     webgl::uniform_2fv(c.drawer.ctx, c.drawer.textCoordTranslateUniform, matrix);
 
     // set texture mapping transformation
     let m = mat::mat3_ident();
+    defer mat::mat3_free(m);
     let matrix = mat::mat3_to_js(m, c.window);
-    mat::mat3_free(m);
     webgl::uniform_matrix_3fv(c.drawer.ctx, c.drawer.transformTextUniform, false, matrix);
 
     // draw
     webgl::draw_arrays(c.drawer.ctx, c.drawer.ctx.TRIANGLES, 0, 6);
 
-    offset = offset + w * ratio * 2.0;
-    i = i + 1;
+    offset += w * ratio * 2.0;
   }
-
-  mem::dealloc_array::<i32>(digits);
 }
 

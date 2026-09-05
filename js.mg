@@ -74,9 +74,7 @@ fn canvas_get_context(canvas: Canvas, name: [*]u8): opaque {
 
 fn str(s: [*]u8): opaque {
   let strlen: usize = 0;
-  while s[strlen].* != 0 {
-    strlen = strlen + 1;
-  }
+  for ; s[strlen].* != 0; strlen += 1 {}
   return env::string(s, strlen);
 }
 

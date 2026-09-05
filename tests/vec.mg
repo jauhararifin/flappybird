@@ -7,18 +7,13 @@ fn testcase_1() {
   let v = mem::alloc::<vec::Vector<i32>>();
   vec::init::<i32>(v);
 
-  let k = 0;
-  while k < 100 {
-    let i: i32 = 0;
-    while i < 100 {
+  for let k = 0; k < 100; k += 1 {
+    for let i: i32 = 0; i < 100; i += 1 {
       vec::push::<i32>(v, i);
-      i = i + 1;
     }
     assert(vec::len::<i32>(v) == 100);
     vec::clear::<i32>(v);
     assert(vec::len::<i32>(v) == 0);
-
-    k = k + 1;
   }
 }
 

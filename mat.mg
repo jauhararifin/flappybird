@@ -40,12 +40,10 @@ fn new_polygon(n: usize): Polygon {
 }
 
 fn polygon_free(p: Polygon) {
-  let i: usize = 0;
-  while i < p.n {
+  defer mem::dealloc_array::<Vec3>(p.points);
+  for let i: usize = 0; i < p.n; i += 1 {
     vec3_free(p.points[i].*);
-    i = i + 1;
   }
-  mem::dealloc_array::<Vec3>(p.points);
 }
 
 fn polygon_to_js(window: js::Window, p: Polygon): opaque {
@@ -53,21 +51,17 @@ fn polygon_to_js(window: js::Window, p: Polygon): opaque {
   let arr = env::new0(Array);
   let push = env::get_property(arr, js::str("push"));
 
-  let i: usize = 0;
-  while i < p.n {
+  for let i: usize = 0; i < p.n; i += 1 {
     let point = js::new_f32_array(window, p.points[i].*.v, 3);
     env::call1(arr, push, point);
-    i = i + 1;
   }
   return arr;
 }
 
 fn mat3_mul_polygon(m: Mat3, p: Polygon) {
   let result = new_polygon(p.n);
-  let i: usize = 0;
-  while i < p.n {
+  for let i: usize = 0; i < p.n; i += 1 {
     result.points[i].* = mat3_mul_vec3(m, result.points[i].*);
-    i = i + 1;
   }
 }
 
@@ -138,21 +132,15 @@ fn mat3_mul(a: Mat3, b: Mat3): Mat3 {
     0.0, 0.0, 0.0,
   );
 
-  let i: i32 = 0;
-  while i < 3 {
-    let j: i32 = 0;
-    while j < 3 {
-      let k: i32 = 0;
-      while k < 3 {
+  for let i: i32 = 0; i < 3; i += 1 {
+    for let j: i32 = 0; j < 3; j += 1 {
+      for let k: i32 = 0; k < 3; k += 1 {
         let x = mat3_get(result, i, j);
         let y = mat3_get(a, i, k);
         let z = mat3_get(b, k, j);
         mat3_set(result, i, j, x + y*z);
-        k = k + 1;
       }
-      j = j + 1;
     }
-    i = i + 1;
   }
 
   return result;
@@ -165,14 +153,10 @@ fn mat3_transpose(m: Mat3): Mat3 {
     0.0, 0.0, 0.0,
   );
 
-  let i: i32 = 0;
-  while i < 3 {
-    let j: i32 = 0;
-    while j < 3 {
+  for let i: i32 = 0; i < 3; i += 1 {
+    for let j: i32 = 0; j < 3; j += 1 {
       mat3_set(result, i, j, mat3_get(m, j, i));
-      j = j + 1;
     }
-    i = i + 1;
   }
 
   return result;
@@ -192,13 +176,11 @@ fn sin(x: f32): f32 {
   let value: f32 = x;
   let sign: f32 = 1.0;
   let factorial: f32 = 1.0;
-  let i = 0;
-  while i < 10 {
-    result = result + value*sign/factorial;
+  for let i = 0; i < 10; i += 1 {
+    result += value*sign/factorial;
     sign = -sign;
     factorial = factorial * (i*2+2) as f32 * (i*2+3) as f32;
     value = value * x * x;
-    i = i + 1;
   }
   return result;
 }
@@ -210,7 +192,7 @@ fn cos(x: f32): f32 {
 // TODO: use binary search instead of linear search like this.
 fn fmod(a: f32, b: f32): f32 {
   while a > b {
-    a = a-b;
+    a -= b;
   }
   return a;
 }
