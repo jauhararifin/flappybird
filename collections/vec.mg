@@ -7,7 +7,7 @@ struct Vector<T>{
 }
 
 fn init<T>(v: *Vector<T>) {
-  v.* = Vector::<T>{
+  v.* = Vector<T>{
     cap: 0,
     len: 0,
     arr: 0 as [*]T,
@@ -16,11 +16,11 @@ fn init<T>(v: *Vector<T>) {
 
 fn init_with_cap<T>(v: *Vector<T>, cap: usize) {
   if v.arr.* as usize != 0 {
-    mem::dealloc_array::<T>( v.arr.* );
+    mem.dealloc_array<T>( v.arr.* );
   }
 
-  let arr = mem::alloc_array::<T>(cap);
-  v.* = Vector::<T>{
+  let arr = mem.alloc_array<T>(cap);
+  v.* = Vector<T>{
     cap: cap,
     len: 0,
     arr: arr,
@@ -35,10 +35,10 @@ fn push<T>(vec: *Vector<T>, item: T) {
     }
 
     if vec.arr.* as usize != 0 {
-      mem::dealloc_array::<T>( vec.arr.* );
+      mem.dealloc_array<T>( vec.arr.* );
     }
 
-    let arr = mem::alloc_array::<T>(new_cap);
+    let arr = mem.alloc_array<T>(new_cap);
     for let i: usize = 0; i < vec.len.*; i += 1 {
       arr[i].* = vec.arr.*[i].*;
     }

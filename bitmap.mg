@@ -40,7 +40,7 @@ fn load_image(buff: [*]u8): Image {
     return Image{};
   }
 
-  let pixels = mem::alloc_array::<Color>((width * height) as usize);
+  let pixels = mem.alloc_array<Color>((width * height) as usize);
   let row_size = width * 4;
   for let y: u64 = 0; y < height; y += 1 {
     for let x: u64 = 0; x < width; x += 1 {
@@ -66,10 +66,10 @@ fn read_u32(p: [*]u8): u32 {
   return (p[0].* as u32) | (p[1].* as u32 << 8) | (p[2].* as u32 << 16) | (p[3].* as u32 << 24);
 }
 
-fn image_to_js(window: js::Window, image: Image): opaque {
+fn image_to_js(window: js.Window, image: Image): opaque {
   let size = image.width * image.height * 4;
-  let data = js::new_uint8_clamped_array(window, image.pixels as [*]u8, size as usize);
+  let data = js.new_uint8_clamped_array(window, image.pixels as [*]u8, size as usize);
 
-  let image_data = env::get_property(window.inner, js::str("ImageData"));
-  return env::new3(image_data, data, env::number(image.width), env::number(image.height));
+  let image_data = env.get_property(window.inner, js.str("ImageData"));
+  return env.new3(image_data, data, env.number(image.width), env.number(image.height));
 }

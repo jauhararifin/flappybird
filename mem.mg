@@ -6,11 +6,11 @@ let page_size: usize = 65536;
 let freelist_head: *Header = 0 as *Header;
 
 fn alloc<T>(): *T {
-  return alloc_size(wasm::size_of::<T>()) as *T;
+  return alloc_size(wasm.size_of<T>()) as *T;
 }
 
 fn alloc_array<T>(len: usize): [*]T {
-  return alloc_size(wasm::size_of::<T>() * len) as [*]T;
+  return alloc_size(wasm.size_of<T>() * len) as [*]T;
 }
 
 fn dealloc_array<T>(p: [*]T) {
@@ -24,7 +24,7 @@ struct Header{
   is_used: bool,
 }
 
-let header_size: usize = wasm::size_of::<Header>();
+let header_size: usize = wasm.size_of<Header>();
 
 // memory layout:
 // - Header: (aligned to 8 byte)
@@ -44,7 +44,7 @@ struct Footer{
   is_used: bool,
 }
 
-let footer_size: usize = wasm::size_of::<Footer>();
+let footer_size: usize = wasm.size_of<Footer>();
 
 fn alloc_size(size: usize): usize {
   let padded_size = pad(size);
@@ -256,7 +256,7 @@ fn allocate_from_new_page(size: usize): usize {
   let total_size = padded_header + padded_size + padded_footer;
   let n_additional_pages = (total_size + page_size - 1) / page_size;
 
-  let page_id = wasm::memory_grow(n_additional_pages);
+  let page_id = wasm.memory_grow(n_additional_pages);
   let p = page_id * page_size;
   if lower_bound == 0 {
     lower_bound = p;

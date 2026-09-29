@@ -57,7 +57,7 @@ fn tick(s: *State, ts: f32) {
   s.now.* = ts;
 
   if s.stage.* == STAGE_READY {
-    s.y.* = mat::sin(s.now.* / 200.0) * 0.07;
+    s.y.* = mat.sin(s.now.* / 200.0) * 0.07;
   } else if s.stage.* == STAGE_RUNNING {
     s.y.* += s.speed.* * ds;
     s.speed.* += gravity * ds;
@@ -78,9 +78,9 @@ fn resize(s: *State, width: f32, height: f32) {
 
 fn check_collision(
   s: *State,
-  bird_box: mat::Polygon,
-  base_box: mat::Polygon,
-  pipe_boxes: *vec::Vector<mat::Polygon>,
+  bird_box: mat.Polygon,
+  base_box: mat.Polygon,
+  pipe_boxes: *vec.Vector<mat.Polygon>,
 ) {
   if s.stage.* != STAGE_RUNNING {
     return;
@@ -104,9 +104,9 @@ fn check_collision(
       break;
     }
 
-    let pipe_boxes_len = vec::len::<mat::Polygon>(pipe_boxes);
+    let pipe_boxes_len = vec.len<mat.Polygon>(pipe_boxes);
     for let j: usize = 0; j < pipe_boxes_len; j += 1 {
-      let polygon = vec::get::<mat::Polygon>(pipe_boxes, j);
+      let polygon = vec.get<mat.Polygon>(pipe_boxes, j);
       for let k: usize = 0; k < polygon.n; k += 1 {
         let c = polygon.points[k].*;
         let d = polygon.points[(k+1)%polygon.n].*;
@@ -132,7 +132,7 @@ fn check_collision(
   }
 }
 
-fn is_ccw(a: mat::Vec3, b: mat::Vec3, c: mat::Vec3): bool {
+fn is_ccw(a: mat.Vec3, b: mat.Vec3, c: mat.Vec3): bool {
   let ax = a.v[0].*;
   let ay = a.v[1].*;
   let bx = b.v[0].*;
@@ -142,7 +142,7 @@ fn is_ccw(a: mat::Vec3, b: mat::Vec3, c: mat::Vec3): bool {
   return ((cy - ay) * (bx - ax)) > ((by - ay) * (cx - ax));
 }
 
-fn is_intersect(a: mat::Vec3, b: mat::Vec3, c: mat::Vec3, d: mat::Vec3): bool {
+fn is_intersect(a: mat.Vec3, b: mat.Vec3, c: mat.Vec3, d: mat.Vec3): bool {
   return (is_ccw(a, c, d) != is_ccw(b, c, d)) && (is_ccw(a, b, c) != is_ccw(a, b, d));
 }
 
