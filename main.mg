@@ -59,7 +59,7 @@ fn setup_state() {
     return;
   }
 
-  s = mem.alloc<state.State>();
+  s = mem.alloc[state.State]();
   s.* = state.State{
     stage: state.STAGE_READY,
 

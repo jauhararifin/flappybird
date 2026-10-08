@@ -1,33 +1,33 @@
 import mem "mem";
 
-struct Vector<T>{
+struct Vector[T]{
   arr: [*]T,
   cap: usize,
   len: usize,
 }
 
-fn init<T>(v: *Vector<T>) {
-  v.* = Vector<T>{
+fn init[T](v: *Vector[T]) {
+  v.* = Vector[T]{
     cap: 0,
     len: 0,
     arr: 0 as [*]T,
   };
 }
 
-fn init_with_cap<T>(v: *Vector<T>, cap: usize) {
+fn init_with_cap[T](v: *Vector[T], cap: usize) {
   if v.arr.* as usize != 0 {
-    mem.dealloc_array<T>( v.arr.* );
+    mem.dealloc_array[T]( v.arr.* );
   }
 
-  let arr = mem.alloc_array<T>(cap);
-  v.* = Vector<T>{
+  let arr = mem.alloc_array[T](cap);
+  v.* = Vector[T]{
     cap: cap,
     len: 0,
     arr: arr,
   };
 }
 
-fn push<T>(vec: *Vector<T>, item: T) {
+fn push[T](vec: *Vector[T], item: T) {
   if vec.len.* == vec.cap.* {
     let new_cap: usize = 1;
     if vec.cap.* != 0 {
@@ -35,10 +35,10 @@ fn push<T>(vec: *Vector<T>, item: T) {
     }
 
     if vec.arr.* as usize != 0 {
-      mem.dealloc_array<T>( vec.arr.* );
+      mem.dealloc_array[T]( vec.arr.* );
     }
 
-    let arr = mem.alloc_array<T>(new_cap);
+    let arr = mem.alloc_array[T](new_cap);
     for let i: usize = 0; i < vec.len.*; i += 1 {
       arr[i].* = vec.arr.*[i].*;
     }
@@ -55,19 +55,19 @@ fn push<T>(vec: *Vector<T>, item: T) {
 // them manually. clear doesn't handle it for you.
 // TODO: support function pointer so that we are able to pass destructor function
 // for the vector's elements.
-fn clear<T>(vec: *Vector<T>) {
+fn clear[T](vec: *Vector[T]) {
   vec.len.* = 0;
 }
 
-fn set<T>(vec: *Vector<T>, i: usize, val: T) {
+fn set[T](vec: *Vector[T], i: usize, val: T) {
   vec.arr.*[i].* = val;
 }
 
-fn get<T>(vec: *Vector<T>, i: usize): T {
+fn get[T](vec: *Vector[T], i: usize): T {
   return vec.arr.*[i].*;
 }
 
-fn len<T>(vec: *Vector<T>): usize {
+fn len[T](vec: *Vector[T]): usize {
   return vec.len.*;
 }
 

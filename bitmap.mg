@@ -40,7 +40,7 @@ fn load_image(buff: [*]u8): Image {
     return Image{};
   }
 
-  let pixels = mem.alloc_array<Color>((width * height) as usize);
+  let pixels = mem.alloc_array[Color]((width * height) as usize);
   let row_size = width * 4;
   for let y: u64 = 0; y < height; y += 1 {
     for let x: u64 = 0; x < width; x += 1 {

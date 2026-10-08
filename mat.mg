@@ -7,7 +7,7 @@ struct Vec3 {
 }
 
 fn vec3(x: f32, y: f32, z: f32): Vec3 {
-  let v: [*]f32 = mem.alloc_array<f32>(3);
+  let v: [*]f32 = mem.alloc_array[f32](3);
   v[0].* = x;
   v[1].* = y;
   v[2].* = z;
@@ -15,7 +15,7 @@ fn vec3(x: f32, y: f32, z: f32): Vec3 {
 }
 
 fn vec3_free(v: Vec3) {
-  mem.dealloc_array<f32>(v.v);
+  mem.dealloc_array[f32](v.v);
 }
 
 fn mat3_mul_vec3(m: Mat3, v: Vec3): Vec3 {
@@ -32,7 +32,7 @@ struct Polygon {
 }
 
 fn new_polygon(n: usize): Polygon {
-  let points: [*]Vec3 = mem.alloc_array<Vec3>(n);
+  let points: [*]Vec3 = mem.alloc_array[Vec3](n);
   return Polygon{
     points: points,
     n: n,
@@ -40,7 +40,7 @@ fn new_polygon(n: usize): Polygon {
 }
 
 fn polygon_free(p: Polygon) {
-  defer mem.dealloc_array<Vec3>(p.points);
+  defer mem.dealloc_array[Vec3](p.points);
   for let i: usize = 0; i < p.n; i += 1 {
     vec3_free(p.points[i].*);
   }
@@ -74,7 +74,7 @@ fn mat3(
   m10: f32, m11: f32, m12: f32,
   m20: f32, m21: f32, m22: f32,
 ): Mat3 {
-  let m: [*]f32 = mem.alloc_array<f32>(9);
+  let m: [*]f32 = mem.alloc_array[f32](9);
   m[0].* = m00; m[1].* = m01; m[2].* = m02;
   m[3].* = m10; m[4].* = m11; m[5].* = m12;
   m[6].* = m20; m[7].* = m21; m[8].* = m22;
@@ -82,7 +82,7 @@ fn mat3(
 }
 
 fn mat3_free(mat3: Mat3) {
-  mem.dealloc_array<f32>(mat3.m);
+  mem.dealloc_array[f32](mat3.m);
 }
 
 fn mat3_get(mat3: Mat3, r: i32, c: i32): f32 {

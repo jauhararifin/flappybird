@@ -33,8 +33,8 @@ fn setup(drawer: graphic.Drawer, window: js.Window): Component {
   let position_buffer = webgl.create_buffer(drawer.ctx);
   webgl.bind_buffer(drawer.ctx, drawer.ctx.ARRAY_BUFFER, position_buffer);
 
-  let position_data: [*]f32 = mem.alloc_array<f32>(12);
-  defer mem.dealloc_array<f32>(position_data);
+  let position_data: [*]f32 = mem.alloc_array[f32](12);
+  defer mem.dealloc_array[f32](position_data);
   position_data[ 0].* = -ratio; position_data[ 1].* = -1.0;
   position_data[ 2].* = -ratio; position_data[ 3].* = 1.0;
   position_data[ 4].* =  ratio; position_data[ 5].* = -1.0;
@@ -46,8 +46,8 @@ fn setup(drawer: graphic.Drawer, window: js.Window): Component {
   let tex_coord_buffer = webgl.create_buffer(drawer.ctx);
   webgl.bind_buffer(drawer.ctx, drawer.ctx.ARRAY_BUFFER, tex_coord_buffer);
 
-  let tex_coord_data: [*]f32 = mem.alloc_array<f32>(12);
-  defer mem.dealloc_array<f32>(tex_coord_data);
+  let tex_coord_data: [*]f32 = mem.alloc_array[f32](12);
+  defer mem.dealloc_array[f32](tex_coord_data);
   tex_coord_data[ 0].* = 0.0; tex_coord_data[ 1].* = -1.625;
   tex_coord_data[ 2].* = 0.0; tex_coord_data[ 3].* = 1.0;
   tex_coord_data[ 4].* = 1.0; tex_coord_data[ 5].* = -1.625;
@@ -56,7 +56,7 @@ fn setup(drawer: graphic.Drawer, window: js.Window): Component {
   tex_coord_data[10].* = 1.0; tex_coord_data[11].* = 1.0;
   webgl.buffer_data(drawer.ctx, drawer.ctx.ARRAY_BUFFER, js.new_f32_array(window, tex_coord_data, 12), drawer.ctx.STATIC_DRAW);
 
-  let bounding_box = mem.alloc<mat.Polygon>();
+  let bounding_box = mem.alloc[mat.Polygon]();
   bounding_box.* = mat.new_polygon(1);
   bounding_box.*.points[0].* = mat.vec3(0.0, 0.0, 0.0);
 
@@ -104,8 +104,8 @@ fn draw(c: Component, s: state.State) {
   webgl.uniform_matrix_3fv(c.drawer.ctx, c.drawer.transformUniform, false, matrix);
 
   let n_points: usize = 4;
-  let bounding_box_points = mem.alloc_array<mat.Vec3>(n_points);
-  defer mem.dealloc_array<mat.Vec3>(bounding_box_points);
+  let bounding_box_points = mem.alloc_array[mat.Vec3](n_points);
+  defer mem.dealloc_array[mat.Vec3](bounding_box_points);
   bounding_box_points[ 0].* = mat.vec3(-1.0,  1.0,  1.0);
   bounding_box_points[ 1].* = mat.vec3( 1.0,  1.0,  1.0);
   bounding_box_points[ 2].* = mat.vec3( 1.0, -1.0,  1.0);
@@ -123,8 +123,8 @@ fn draw(c: Component, s: state.State) {
   }
 
   // set texture translation
-  let matrix_arr: [*]f32 = mem.alloc_array<f32>(2);
-  defer mem.dealloc_array<f32>(matrix_arr);
+  let matrix_arr: [*]f32 = mem.alloc_array[f32](2);
+  defer mem.dealloc_array[f32](matrix_arr);
   let distance: f32 = state.dist(s);
   let x = distance * 7.45;
   let k = (x as i64) as f32;

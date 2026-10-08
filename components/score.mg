@@ -24,7 +24,7 @@ let portion: f32 = 0.08;
 let eps: f32 = 0.001;
 
 fn setup(drawer: graphic.Drawer, window: js.Window): Component {
-  let x_offset: [*]f32 = mem.alloc_array<f32>(10);
+  let x_offset: [*]f32 = mem.alloc_array[f32](10);
   x_offset[0].* = 0.0;
   x_offset[1].* = 0.1037344398340249;
   x_offset[2].* = 0.17427385892116182;
@@ -45,8 +45,8 @@ fn setup(drawer: graphic.Drawer, window: js.Window): Component {
     let w = next_offset - x_offset[i].*;
     let r = ratio * w;
 
-    let position_data: [*]f32 = mem.alloc_array<f32>(12);
-    defer mem.dealloc_array<f32>(position_data);
+    let position_data: [*]f32 = mem.alloc_array[f32](12);
+    defer mem.dealloc_array[f32](position_data);
     position_data[ 0].* = -r; position_data[ 1].* = -1.0;
     position_data[ 2].* = -r; position_data[ 3].* = 1.0;
     position_data[ 4].* =  r; position_data[ 5].* = -1.0;
@@ -57,8 +57,8 @@ fn setup(drawer: graphic.Drawer, window: js.Window): Component {
     webgl.bind_buffer(drawer.ctx, drawer.ctx.ARRAY_BUFFER, position_buffer);
     webgl.buffer_data(drawer.ctx, drawer.ctx.ARRAY_BUFFER, js.new_f32_array(window, position_data, 12), drawer.ctx.STATIC_DRAW);
 
-    let tex_coord_data: [*]f32 = mem.alloc_array<f32>(12);
-    defer mem.dealloc_array<f32>(tex_coord_data);
+    let tex_coord_data: [*]f32 = mem.alloc_array[f32](12);
+    defer mem.dealloc_array[f32](tex_coord_data);
     tex_coord_data[ 0].* = x_offset[i].*;     tex_coord_data[ 1].* = 0.0;
     tex_coord_data[ 2].* = x_offset[i].*;     tex_coord_data[ 3].* = 1.0;
     tex_coord_data[ 4].* = next_offset - eps; tex_coord_data[ 5].* = 0.0;
@@ -98,8 +98,8 @@ fn draw(c: Component, s: state.State) {
     score = 0;
   }
 
-  let digits = mem.alloc_array<i32>(10);
-  defer mem.dealloc_array<i32>(digits);
+  let digits = mem.alloc_array[i32](10);
+  defer mem.dealloc_array[i32](digits);
   let n_digits = 0;
   if score == 0 {
     digits[n_digits].* = 0;
@@ -181,8 +181,8 @@ fn draw(c: Component, s: state.State) {
     webgl.uniform_matrix_3fv(c.drawer.ctx, c.drawer.transformUniform, false, matrix);
 
     // set texture translation
-    let matrix_arr: [*]f32 = mem.alloc_array<f32>(2);
-    defer mem.dealloc_array<f32>(matrix_arr);
+    let matrix_arr: [*]f32 = mem.alloc_array[f32](2);
+    defer mem.dealloc_array[f32](matrix_arr);
     matrix_arr[0].* = 0.0; matrix_arr[1].* = 0.0;
     let matrix = js.new_f32_array(c.window, matrix_arr, 2);
     webgl.uniform_2fv(c.drawer.ctx, c.drawer.textCoordTranslateUniform, matrix);
