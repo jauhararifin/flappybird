@@ -159,7 +159,7 @@ fn create_shader(ctx: RenderingContext, shader_type: opaque): Shader {
   };
 }
 
-fn shader_source(ctx: RenderingContext, shader: Shader, source: [*]u8) {
+fn shader_source(ctx: RenderingContext, shader: Shader, source: string) {
   env.call2(ctx.inner, ctx.shaderSource, shader.inner, js.str(source));
 }
 
@@ -185,13 +185,13 @@ fn use_program(ctx: RenderingContext, program: Program) {
   env.call1(ctx.inner, ctx.useProgram, program.inner);
 }
 
-fn get_attrib_location(ctx: RenderingContext, program: Program, name: [*]u8): AttribLocation {
+fn get_attrib_location(ctx: RenderingContext, program: Program, name: string): AttribLocation {
   return AttribLocation{
     inner: env.call2(ctx.inner, ctx.getAttribLocation, program.inner, js.str(name)),
   };
 }
 
-fn get_uniform_location(ctx: RenderingContext, program: Program, name: [*]u8): UniformLocation {
+fn get_uniform_location(ctx: RenderingContext, program: Program, name: string): UniformLocation {
   return UniformLocation{
     inner: env.call2(ctx.inner, ctx.getUniformLocation, program.inner, js.str(name)),
   };

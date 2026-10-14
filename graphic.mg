@@ -11,7 +11,7 @@ struct Drawer {
   textCoordTranslateUniform: webgl.UniformLocation,
 }
 
-let vertexShaderSource: [*]u8 = "
+let vertexShaderSource: string = "
   attribute vec2 a_position;
   attribute vec2 a_textcoord;
   uniform mat3 u_transform;
@@ -23,7 +23,7 @@ let vertexShaderSource: [*]u8 = "
   }
 ";
 
-let fragmentShaderSource: [*]u8 = "
+let fragmentShaderSource: string = "
   precision mediump float;
   varying vec2 v_textcoord;
   uniform sampler2D u_texture;
@@ -67,7 +67,7 @@ fn setup(window: js.Window): Drawer {
   };
 }
 
-fn create_shader(ctx: webgl.RenderingContext, shader_type: opaque, source: [*]u8): webgl.Shader {
+fn create_shader(ctx: webgl.RenderingContext, shader_type: opaque, source: string): webgl.Shader {
   let shader = webgl.create_shader(ctx, shader_type);
   webgl.shader_source(ctx, shader, source);
   webgl.compile_shader(ctx, shader);

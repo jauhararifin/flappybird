@@ -47,11 +47,11 @@ fn get_window(): Window {
   };
 }
 
-fn add_event_listener(window: Window, event: [*]u8, callback: fn(opaque): opaque) {
+fn add_event_listener(window: Window, event: string, callback: fn(opaque): opaque) {
   env.call2(window.inner, window.add_event_listener, str(event), env.func(callback));
 }
 
-fn get_element_by_id(document: Document, id: [*]u8): opaque {
+fn get_element_by_id(document: Document, id: string): opaque {
   return env.call1(document.inner, document.get_element_by_id, str(id));
 }
 
@@ -67,15 +67,13 @@ fn new_canvas(element: opaque): Canvas {
   return Canvas{inner: element};
 }
 
-fn canvas_get_context(canvas: Canvas, name: [*]u8): opaque {
+fn canvas_get_context(canvas: Canvas, name: string): opaque {
   let get_context = env.get_property(canvas.inner, str("getContext"));
   return env.call1(canvas.inner, get_context, str(name));
 }
 
-fn str(s: [*]u8): opaque {
-  let strlen: usize = 0;
-  for ; s[strlen].* != 0; strlen += 1 {}
-  return env.string(s, strlen);
+fn str(s: string): opaque {
+  return env.string_from_utf8(s);
 }
 
 fn new_uint8_clamped_array(window: Window, buff: [*]u8, len: usize): opaque {

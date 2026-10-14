@@ -44,7 +44,7 @@ fn call5(this: opaque, f: opaque, arg1: opaque, arg2: opaque, arg3: opaque, arg4
 fn call6(this: opaque, f: opaque, arg1: opaque, arg2: opaque, arg3: opaque, arg4: opaque, arg5: opaque, arg6: opaque): opaque;
 
 @wasm_import("env", "string")
-fn string(s: [*]u8, len: usize): opaque;
+fn string_from_utf8(s: string): opaque;
 
 @wasm_import("env", "number")
 fn number(n: u64): opaque;
