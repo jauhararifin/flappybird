@@ -17,7 +17,7 @@ struct Component{
 }
 
 @embed_file("./assets/digits.bmp")
-let digits_bmp: [*]u8;
+let digits_bmp: *[u8];
 
 let ratio: f32 = 482.0/72.0;
 let portion: f32 = 0.08;

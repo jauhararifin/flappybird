@@ -29,17 +29,22 @@ struct Color {
   a: u8,
 }
 
-fn load_image(buff: [*]u8): Image {
-  let width = read_u32(buff[18] as [*]u8) as u64;
-  let height = read_u32(buff[22] as [*]u8) as u64;
-
-  let pixel_p = (read_u32(buff[10] as [*]u8) + (buff as u32)) as [*]u8;
-
-  let bits_per_pixel = (buff[28] as *u16).*;
-  if bits_per_pixel != 32 {
+fn load_image(buff: *[u8]): Image {
+  if buff.len < 30 {
     return Image{};
   }
 
+  let width = read_u32(buff[18] as [*]u8) as u64;
+  let height = read_u32(buff[22] as [*]u8) as u64;
+  let pixel_offset = read_u32(buff[10] as [*]u8) as usize;
+  let pixel_size = width * height * 4;
+
+  let bits_per_pixel = (buff[28] as *u16).*;
+  if bits_per_pixel != 32 || pixel_offset > buff.len || pixel_size > (buff.len - pixel_offset) as u64 {
+    return Image{};
+  }
+
+  let pixel_p = *[u8]{ptr: buff.ptr[pixel_offset] as [*]u8, len: pixel_size as usize};
   let pixels = mem.alloc_array[Color]((width * height) as usize);
   let row_size = width * 4;
   for let y: u64 = 0; y < height; y += 1 {

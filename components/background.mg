@@ -15,7 +15,7 @@ struct Component{
 }
 
 @embed_file("./assets/background.bmp")
-let background_bmp: [*]u8;
+let background_bmp: *[u8];
 
 let ratio: f32 = 128.0/200.0;
 let portion: f32 = 0.4;

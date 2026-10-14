@@ -20,7 +20,7 @@ struct Component{
 }
 
 @embed_file("./assets/pipe.bmp")
-let pipe_bmp: [*]u8;
+let pipe_bmp: *[u8];
 
 let ratio: f32 = 52.0/320.0;
 let portion: f32 = 1.0;

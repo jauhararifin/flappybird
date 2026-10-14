@@ -17,7 +17,7 @@ struct Component{
 }
 
 @embed_file("./assets/base.bmp")
-let base_bmp: [*]u8;
+let base_bmp: *[u8];
 
 let ratio: f32 = 16.0/42.0;
 let base_portion: f32 = 0.15;

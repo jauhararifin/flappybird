@@ -19,7 +19,7 @@ struct Component{
 }
 
 @embed_file("./assets/bird.bmp")
-let bird_bmp: [*]u8;
+let bird_bmp: *[u8];
 
 let ratio: f32 = 45.0/30.0;
 let portion: f32 = 0.07;
